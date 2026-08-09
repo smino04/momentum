@@ -10,6 +10,7 @@ import PageHeader from '../components/PageHeader'
 import { todayKey, addDays, daysBetween } from '../utils/date'
 import { calcMomentum, calcLifetimeCompletion, calculateCurrentStreak, calculateBestStreak } from '../utils/momentum'
 import { calcConditionInsight } from '../utils/insights'
+import { getNextOuting } from '../utils/outings'
 import { CONDITION_FIELDS, CONDITION_SCALE } from '../utils/constants'
 
 export default function Progress({ data, update }) {
@@ -32,7 +33,8 @@ export default function Progress({ data, update }) {
     [data.dailyLogs, data.habits]
   )
 
-  const dday = data.leaveDate && data.leaveDate >= today ? daysBetween(today, data.leaveDate) : null
+  const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
+  const dday = nextOuting ? daysBetween(today, nextOuting.date) : null
 
   const sortedWeights = [...data.weightLogs].sort((a, b) => a.date.localeCompare(b.date))
   const currentWeight = sortedWeights[sortedWeights.length - 1]?.weight
@@ -91,7 +93,7 @@ export default function Progress({ data, update }) {
       {dday !== null && (
         <div className="mt-3 rounded-[18px] px-4 py-4" style={{ background: 'var(--surface)' }}>
           <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
-            🎯 휴가 챌린지
+            🎯 {nextOuting?.type ?? '휴가'} 챌린지
           </p>
           <div className="mt-2 flex items-center justify-between">
             <div>
@@ -99,7 +101,7 @@ export default function Progress({ data, update }) {
                 D-{dday}
               </p>
               <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
-                휴가까지 남은 날
+                {nextOuting?.type ?? '휴가'}까지 남은 날
               </p>
             </div>
             <div className="text-right">

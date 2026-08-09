@@ -1,8 +1,9 @@
-import { Home, TrendingUp, Settings } from 'lucide-react'
+import { Home, TrendingUp, CalendarDays, Settings } from 'lucide-react'
 
 const TABS = [
   { id: 'home', label: '홈', icon: Home },
   { id: 'progress', label: '진행상황', icon: TrendingUp },
+  { id: 'calendar', label: '캘린더', icon: CalendarDays },
   { id: 'settings', label: '설정', icon: Settings },
 ]
 

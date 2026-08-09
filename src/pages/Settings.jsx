@@ -3,9 +3,10 @@ import { Trash2, Moon, Sun, Plus, X, ChevronUp, ChevronDown, Pencil } from 'luci
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
 import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP } from '../utils/constants'
-import { todayKey } from '../utils/date'
+import { todayKey, formatShortDate } from '../utils/date'
+import { getNextOuting } from '../utils/outings'
 
-export default function Settings({ data, update, onReset }) {
+export default function Settings({ data, update, onReset, onNavigate }) {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
@@ -22,9 +23,7 @@ export default function Settings({ data, update, onReset }) {
     update((prev) => ({ ...prev, profile: { ...prev.profile, [field]: value } }))
   }
 
-  function updateLeaveDate(value) {
-    update((prev) => ({ ...prev, leaveDate: value }))
-  }
+  const nextOuting = getNextOuting(data.outings, todayKey())
 
   function setTheme(theme) {
     update((prev) => ({ ...prev, theme }))
@@ -153,16 +152,17 @@ export default function Settings({ data, update, onReset }) {
         </Field>
       </Section>
 
-      <Section title="🌅 휴가">
-        <Field label="다음 휴가 날짜">
-          <input
-            type="date"
-            value={data.leaveDate}
-            onChange={(e) => updateLeaveDate(e.target.value)}
-            className="input-field"
-            style={{ colorScheme: isLight ? 'light' : 'dark' }}
-          />
-        </Field>
+      <Section title="🌅 휴가/외출/외박">
+        <button
+          onClick={() => onNavigate?.('calendar')}
+          className="flex w-full items-center justify-between rounded-2xl border px-4 py-3.5"
+          style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
+        >
+          <span className="text-sm" style={{ color: 'var(--text-2)' }}>
+            {nextOuting ? `다음 ${nextOuting.type} · ${formatShortDate(nextOuting.date)}` : '등록된 일정 없음'}
+          </span>
+          <span className="text-xs font-medium text-accent">캘린더에서 관리 →</span>
+        </button>
       </Section>
 
       <Section title="✅ 관리 항목">

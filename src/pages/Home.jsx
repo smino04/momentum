@@ -9,11 +9,13 @@ import HabitDetailModal from '../components/HabitDetailModal'
 import PageHeader from '../components/PageHeader'
 import { todayKey, formatMonthDay, leaveDDay, addDays } from '../utils/date'
 import { calcMomentum, todayCompletionRate, calculateCurrentStreak } from '../utils/momentum'
+import { getNextOuting } from '../utils/outings'
 import { STREAK_MILESTONE_MESSAGES } from '../utils/constants'
 
 export default function Home({ data, update }) {
   const today = todayKey()
-  const dday = leaveDDay(data.leaveDate, today)
+  const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
+  const dday = leaveDDay(nextOuting?.date, today)
 
   const log = data.dailyLogs[today] || {}
   const recoveryLog = log.__recovery || {}
@@ -95,7 +97,7 @@ export default function Home({ data, update }) {
   }
 
   if (dday?.isToday) {
-    return <LeaveDayView data={data} today={today} />
+    return <LeaveDayView data={data} today={today} outingType={nextOuting?.type ?? '휴가'} />
   }
 
   return (
@@ -103,7 +105,7 @@ export default function Home({ data, update }) {
       <PageHeader title="홈" />
 
       <div className="mt-6">
-        <Countdown leaveDate={data.leaveDate} dday={dday} />
+        <Countdown date={nextOuting?.date} dday={dday} label={nextOuting?.type ?? '휴가'} />
       </div>
 
       <div className="mt-6">
@@ -151,7 +153,7 @@ export default function Home({ data, update }) {
   )
 }
 
-function LeaveDayView({ data, today }) {
+function LeaveDayView({ data, today, outingType }) {
   const momentumNow = calcMomentum(data.dailyLogs, data.habits, today)
   const momentum30ago = calcMomentum(data.dailyLogs, data.habits, addDays(today, -30))
 
@@ -168,7 +170,7 @@ function LeaveDayView({ data, today }) {
       className="flex min-h-screen flex-col justify-center px-6 pb-24 text-center"
       style={{ paddingTop: 'max(2rem, calc(env(safe-area-inset-top) + 0.75rem))' }}
     >
-      <p className="text-xs font-medium tracking-widest text-accent">🎉 휴가일</p>
+      <p className="text-xs font-medium tracking-widest text-accent">🎉 {outingType}일</p>
       <p className="mt-2 text-4xl font-bold" style={{ color: 'var(--text)' }}>
         오늘입니다.
       </p>

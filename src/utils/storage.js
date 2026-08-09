@@ -7,6 +7,7 @@ const DEFAULT_DATA = {
   theme: 'dark',
   profile: { name: '', height: '', weight: '', bodyFat: '' },
   leaveDate: '',
+  outings: [],
   habits: DEFAULT_HABITS,
   dailyLogs: {},
   weightLogs: [],
@@ -20,7 +21,13 @@ export function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return structuredClone(DEFAULT_DATA)
     const parsed = JSON.parse(raw)
-    return { ...structuredClone(DEFAULT_DATA), ...parsed }
+    const merged = { ...structuredClone(DEFAULT_DATA), ...parsed }
+
+    if (merged.leaveDate && merged.outings.length === 0) {
+      merged.outings = [{ id: 'legacy-leave', type: '휴가', date: merged.leaveDate }]
+    }
+
+    return merged
   } catch {
     return structuredClone(DEFAULT_DATA)
   }

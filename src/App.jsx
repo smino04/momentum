@@ -3,6 +3,7 @@ import BottomNav from './components/BottomNav'
 import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
 import Progress from './pages/Progress'
+import Calendar from './pages/Calendar'
 import Settings from './pages/Settings'
 import { useAppData } from './utils/useAppData'
 
@@ -18,6 +19,7 @@ export default function App() {
             ...prev,
             onboarded: true,
             leaveDate,
+            outings: leaveDate ? [{ id: `outing-${leaveDate}`, type: '휴가', date: leaveDate }] : [],
             habits,
             profile: { ...prev.profile, ...profile },
             weightLogs,
@@ -31,7 +33,8 @@ export default function App() {
     <div className="mx-auto min-h-screen max-w-md">
       {tab === 'home' && <Home data={data} update={update} />}
       {tab === 'progress' && <Progress data={data} update={update} />}
-      {tab === 'settings' && <Settings data={data} update={update} onReset={reset} />}
+      {tab === 'calendar' && <Calendar data={data} update={update} />}
+      {tab === 'settings' && <Settings data={data} update={update} onReset={reset} onNavigate={setTab} />}
       <BottomNav active={tab} onChange={setTab} />
     </div>
   )

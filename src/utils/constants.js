@@ -26,6 +26,12 @@ export const HABIT_EMOJI_CHOICES = [
 
 export const CUSTOM_HABIT_GROUP = '기타'
 
+export const OUTING_TYPES = [
+  { id: '휴가', label: '휴가', emoji: '🏖️' },
+  { id: '외출', label: '외출', emoji: '🚶' },
+  { id: '외박', label: '외박', emoji: '🌙' },
+]
+
 export const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100]
 
 export const CONDITION_FIELDS = [
