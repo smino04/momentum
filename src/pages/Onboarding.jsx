@@ -106,7 +106,8 @@ export default function Onboarding({ onComplete }) {
 
         {step === 4 && (
           <div className="mt-16 animate-fade-in text-center">
-            <p className="text-3xl font-bold text-white">준비 완료.</p>
+            <p className="text-5xl">🌅</p>
+            <p className="mt-4 text-3xl font-bold text-white">준비 완료.</p>
             <p className="mt-3 text-white/50">휴가까지 매일 쌓아보세요.</p>
           </div>
         )}

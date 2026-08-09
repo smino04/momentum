@@ -41,17 +41,17 @@ export default function Progress({ data, update }) {
 
   return (
     <div className="px-6 pb-28 pt-8">
-      <p className="text-xs font-medium tracking-widest text-white/40">YOUR PROGRESS</p>
+      <p className="text-xs font-medium tracking-widest text-white/40">📈 YOUR PROGRESS</p>
 
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <StatBlock label="Momentum" value={momentum} />
-        <StatBlock label="관리일" value={`${activeDays}일`} />
-        <StatBlock label="완료율" value={`${completionRate}%`} />
+        <StatBlock emoji="🔥" label="Momentum" value={momentum} />
+        <StatBlock emoji="📅" label="관리일" value={`${activeDays}일`} />
+        <StatBlock emoji="✅" label="완료율" value={`${completionRate}%`} />
       </div>
 
       <div className="mt-8">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium tracking-widest text-white/40">BODY</p>
+          <p className="text-xs font-medium tracking-widest text-white/40">💪 BODY</p>
           <button
             onClick={() => setWeightModalOpen(true)}
             className="flex items-center gap-1 text-xs text-accent"
@@ -105,11 +105,13 @@ export default function Progress({ data, update }) {
   )
 }
 
-function StatBlock({ label, value }) {
+function StatBlock({ emoji, label, value }) {
   return (
     <div className="rounded-[18px] bg-white/[0.04] px-3 py-4 text-center">
       <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="mt-1 text-[11px] text-white/40">{label}</p>
+      <p className="mt-1 text-[11px] text-white/40">
+        {emoji} {label}
+      </p>
     </div>
   )
 }

@@ -23,7 +23,7 @@ export default function Profile({ data, update, onReset }) {
 
   return (
     <div className="px-6 pb-28 pt-8">
-      <p className="text-xs font-medium tracking-widest text-white/40">PROFILE</p>
+      <p className="text-xs font-medium tracking-widest text-white/40">🙂 PROFILE</p>
       <p className="mt-1 text-2xl font-bold text-white">{APP_NAME}</p>
       <p className="text-sm text-white/40">{APP_TAGLINE}</p>
 
@@ -68,7 +68,7 @@ export default function Profile({ data, update, onReset }) {
         </Field>
       </Section>
 
-      <Section title="휴가">
+      <Section title="🌅 휴가">
         <Field label="다음 휴가 날짜">
           <input
             type="date"
@@ -79,7 +79,7 @@ export default function Profile({ data, update, onReset }) {
         </Field>
       </Section>
 
-      <Section title="관리 항목">
+      <Section title="✅ 관리 항목">
         <div className="flex flex-col gap-2">
           {data.habits.map((h) => (
             <button
@@ -87,7 +87,10 @@ export default function Profile({ data, update, onReset }) {
               onClick={() => toggleHabit(h.id)}
               className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3.5"
             >
-              <span className="text-[15px] text-white">{h.label}</span>
+              <span className="flex items-center gap-2 text-[15px] text-white">
+                <span>{h.emoji}</span>
+                {h.label}
+              </span>
               <span
                 className={`h-6 w-10 rounded-full p-0.5 transition-colors ${
                   h.enabled ? 'bg-accent' : 'bg-white/15'

@@ -1,4 +1,5 @@
 export default function MomentumCard({ momentum, delta }) {
+  const trendEmoji = delta > 0 ? '🔥' : delta < 0 ? '🌧️' : '🌱'
   const trendLabel = delta > 0 ? '상승 중' : delta < 0 ? '하락 중' : '유지 중'
   const deltaLabel =
     delta === null || delta === undefined
@@ -9,7 +10,9 @@ export default function MomentumCard({ momentum, delta }) {
     <div className="rounded-[20px] bg-white/[0.04] p-5">
       <p className="text-xs font-medium tracking-widest text-white/40">MOMENTUM</p>
       <div className="mt-2 flex items-end justify-between">
-        <p className="text-5xl font-bold leading-none text-white">{momentum}</p>
+        <p className="text-5xl font-bold leading-none text-white">
+          {momentum} <span className="text-3xl align-middle">{trendEmoji}</span>
+        </p>
         <div className="pb-1 text-right">
           {deltaLabel && <p className="text-sm font-medium text-accent">{deltaLabel}</p>}
           <p className="text-xs text-white/40">{trendLabel}</p>

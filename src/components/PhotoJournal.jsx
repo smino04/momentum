@@ -40,7 +40,7 @@ export default function PhotoJournal({ photos, onAdd }) {
 
   return (
     <div>
-      <p className="text-xs font-medium tracking-widest text-white/40">PHOTO JOURNAL</p>
+      <p className="text-xs font-medium tracking-widest text-white/40">📸 PHOTO JOURNAL</p>
       <p className="mt-1 text-xs text-white/30">주 1회 기록을 권장합니다.</p>
 
       <div className="mt-3 grid grid-cols-3 gap-2">

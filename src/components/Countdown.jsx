@@ -24,7 +24,7 @@ export default function Countdown({ leaveDate, dday }) {
 
   return (
     <div className="pt-2">
-      <p className="text-xs font-medium tracking-widest text-white/40">NEXT LEAVE</p>
+      <p className="text-xs font-medium tracking-widest text-white/40">🌅 NEXT LEAVE</p>
       <p className="mt-2 text-[64px] font-bold leading-none tracking-tight text-white">
         {dday.isToday ? 'D-DAY' : `D-${dday.diff}`}
       </p>

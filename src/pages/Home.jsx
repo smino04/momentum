@@ -50,7 +50,7 @@ export default function Home({ data, update }) {
       <Countdown leaveDate={data.leaveDate} dday={dday} />
 
       <div className="mt-10">
-        <p className="text-xs font-medium tracking-widest text-white/40">TODAY · {formatMonthDay(today)}</p>
+        <p className="text-xs font-medium tracking-widest text-white/40">☀️ TODAY · {formatMonthDay(today)}</p>
         <HabitList habits={data.habits} log={log} onToggle={toggleHabit} />
       </div>
 
@@ -77,7 +77,7 @@ function LeaveDayView({ data, today }) {
 
   return (
     <div className="flex min-h-screen flex-col justify-center px-6 pb-24 text-center">
-      <p className="text-xs font-medium tracking-widest text-accent">LEAVE DAY</p>
+      <p className="text-xs font-medium tracking-widest text-accent">🎉 LEAVE DAY</p>
       <p className="mt-2 text-4xl font-bold text-white">오늘입니다.</p>
 
       <div className="mt-10 rounded-[20px] bg-white/[0.04] p-6 text-left">

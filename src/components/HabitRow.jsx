@@ -6,7 +6,8 @@ export default function HabitRow({ habit, checked, onToggle }) {
       onClick={() => onToggle(habit.id)}
       className="flex w-full items-center justify-between border-b border-white/5 py-4 text-left active:bg-white/5"
     >
-      <span className={`text-[17px] transition-colors ${checked ? 'text-white/35' : 'text-white'}`}>
+      <span className={`flex items-center gap-2.5 text-[17px] transition-colors ${checked ? 'text-white/35' : 'text-white'}`}>
+        <span className="text-lg">{habit.emoji}</span>
         {habit.label}
       </span>
       <span
