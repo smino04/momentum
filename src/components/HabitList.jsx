@@ -14,8 +14,8 @@ export default function HabitList({ habits, log, onToggle }) {
 
   if (enabled.length === 0) {
     return (
-      <p className="py-6 text-sm text-white/40">
-        관리 항목이 없습니다. 프로필에서 추가해보세요.
+      <p className="py-6 text-sm" style={{ color: 'var(--text-3)' }}>
+        관리 항목이 없습니다. 설정에서 추가해보세요.
       </p>
     )
   }
@@ -24,7 +24,10 @@ export default function HabitList({ habits, log, onToggle }) {
     <div>
       {groups.map((group) => (
         <div key={group.name} className="mb-2">
-          <p className="pb-1 pt-4 text-[11px] font-semibold tracking-widest text-white/30">
+          <p
+            className="pb-1 pt-4 text-[11px] font-semibold tracking-widest"
+            style={{ color: 'var(--text-4)' }}
+          >
             {group.name}
           </p>
           {group.items.map((habit) => (

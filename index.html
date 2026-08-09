@@ -11,6 +11,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="description" content="군인을 위한 자기관리 트래커" />
     <title>말출</title>
+    <script>
+      try {
+        var saved = JSON.parse(localStorage.getItem('moment_app_data') || '{}')
+        document.documentElement.setAttribute('data-theme', saved.theme === 'light' ? 'light' : 'dark')
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

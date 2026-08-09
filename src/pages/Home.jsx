@@ -50,7 +50,9 @@ export default function Home({ data, update }) {
       <Countdown leaveDate={data.leaveDate} dday={dday} />
 
       <div className="mt-10">
-        <p className="text-xs font-medium tracking-widest text-white/40">☀️ TODAY · {formatMonthDay(today)}</p>
+        <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+          ☀️ 오늘 · {formatMonthDay(today)}
+        </p>
         <HabitList habits={data.habits} log={log} onToggle={toggleHabit} />
       </div>
 
@@ -77,16 +79,20 @@ function LeaveDayView({ data, today }) {
 
   return (
     <div className="flex min-h-screen flex-col justify-center px-6 pb-24 text-center">
-      <p className="text-xs font-medium tracking-widest text-accent">🎉 LEAVE DAY</p>
-      <p className="mt-2 text-4xl font-bold text-white">오늘입니다.</p>
+      <p className="text-xs font-medium tracking-widest text-accent">🎉 휴가일</p>
+      <p className="mt-2 text-4xl font-bold" style={{ color: 'var(--text)' }}>
+        오늘입니다.
+      </p>
 
-      <div className="mt-10 rounded-[20px] bg-white/[0.04] p-6 text-left">
-        <p className="text-xs tracking-widest text-white/40">지난 30일</p>
-        <p className="mt-3 text-lg text-white">
-          Momentum {momentum30ago} → <span className="font-bold text-accent">{momentumNow}</span>
+      <div className="mt-10 rounded-[20px] p-6 text-left" style={{ background: 'var(--surface)' }}>
+        <p className="text-xs tracking-widest" style={{ color: 'var(--text-3)' }}>
+          지난 30일
+        </p>
+        <p className="mt-3 text-lg" style={{ color: 'var(--text)' }}>
+          모멘텀 {momentum30ago} → <span className="font-bold text-accent">{momentumNow}</span>
         </p>
         {typeof weightStart === 'number' && typeof weightEnd === 'number' && (
-          <p className="mt-2 text-lg text-white">
+          <p className="mt-2 text-lg" style={{ color: 'var(--text)' }}>
             체중 {weightStart}kg → <span className="font-bold text-accent">{weightEnd}kg</span>
           </p>
         )}
@@ -96,11 +102,15 @@ function LeaveDayView({ data, today }) {
         <div className="mt-6 flex items-center justify-center gap-3">
           <div className="text-center">
             <img src={firstPhoto.dataUrl} className="h-40 w-32 rounded-2xl object-cover" />
-            <p className="mt-1 text-[11px] text-white/40">BEFORE</p>
+            <p className="mt-1 text-[11px]" style={{ color: 'var(--text-3)' }}>
+              이전
+            </p>
           </div>
           <div className="text-center">
             <img src={lastPhoto.dataUrl} className="h-40 w-32 rounded-2xl object-cover" />
-            <p className="mt-1 text-[11px] text-white/40">NOW</p>
+            <p className="mt-1 text-[11px]" style={{ color: 'var(--text-3)' }}>
+              현재
+            </p>
           </div>
         </div>
       )}

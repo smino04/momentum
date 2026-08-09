@@ -7,8 +7,13 @@ export default function WeightChart({ weightLogs, endKey }) {
 
   if (points.length < 2) {
     return (
-      <div className="flex h-32 items-center justify-center rounded-[20px] bg-white/[0.03]">
-        <p className="text-sm text-white/30">체중을 2회 이상 기록하면 그래프가 표시됩니다.</p>
+      <div
+        className="flex h-32 items-center justify-center rounded-[20px]"
+        style={{ background: 'var(--surface-soft)' }}
+      >
+        <p className="text-sm" style={{ color: 'var(--text-4)' }}>
+          체중을 2회 이상 기록하면 그래프가 표시됩니다.
+        </p>
       </div>
     )
   }
@@ -33,12 +38,12 @@ export default function WeightChart({ weightLogs, endKey }) {
   const path = coords.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
 
   return (
-    <div className="rounded-[20px] bg-white/[0.03] p-4">
+    <div className="rounded-[20px] p-4" style={{ background: 'var(--surface-soft)' }}>
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="none">
-        <path d={path} fill="none" stroke="#3B82F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx={coords[coords.length - 1][0]} cy={coords[coords.length - 1][1]} r="3.5" fill="#3B82F6" />
+        <path d={path} fill="none" stroke="#FF7A45" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx={coords[coords.length - 1][0]} cy={coords[coords.length - 1][1]} r="3.5" fill="#FF7A45" />
       </svg>
-      <div className="mt-1 flex justify-between text-[10px] text-white/30">
+      <div className="mt-1 flex justify-between text-[10px]" style={{ color: 'var(--text-4)' }}>
         <span>{formatMonthDay(dated[0].d)}</span>
         <span>{formatMonthDay(dated[dated.length - 1].d)}</span>
       </div>

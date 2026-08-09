@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Moon, Sun } from 'lucide-react'
 import Modal from '../components/Modal'
 import { APP_NAME, APP_TAGLINE } from '../utils/constants'
 
-export default function Profile({ data, update, onReset }) {
+export default function Settings({ data, update, onReset }) {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const isLight = data.theme === 'light'
 
   function updateProfileField(field, value) {
     update((prev) => ({ ...prev, profile: { ...prev.profile, [field]: value } }))
@@ -21,11 +22,28 @@ export default function Profile({ data, update, onReset }) {
     }))
   }
 
+  function setTheme(theme) {
+    update((prev) => ({ ...prev, theme }))
+  }
+
   return (
     <div className="px-6 pb-28 pt-8">
-      <p className="text-xs font-medium tracking-widest text-white/40">🙂 PROFILE</p>
-      <p className="mt-1 text-2xl font-bold text-white">{APP_NAME}</p>
-      <p className="text-sm text-white/40">{APP_TAGLINE}</p>
+      <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+        🙂 설정
+      </p>
+      <p className="mt-1 text-2xl font-bold" style={{ color: 'var(--text)' }}>
+        {APP_NAME}
+      </p>
+      <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+        {APP_TAGLINE}
+      </p>
+
+      <Section title="🌓 화면 모드">
+        <div className="flex gap-2">
+          <ThemeButton active={!isLight} onClick={() => setTheme('dark')} icon={Moon} label="다크 모드" />
+          <ThemeButton active={isLight} onClick={() => setTheme('light')} icon={Sun} label="라이트 모드" />
+        </div>
+      </Section>
 
       <Section title="기본 정보">
         <Field label="이름">
@@ -74,7 +92,8 @@ export default function Profile({ data, update, onReset }) {
             type="date"
             value={data.leaveDate}
             onChange={(e) => updateLeaveDate(e.target.value)}
-            className="input-field [color-scheme:dark]"
+            className="input-field"
+            style={{ colorScheme: isLight ? 'light' : 'dark' }}
           />
         </Field>
       </Section>
@@ -85,16 +104,16 @@ export default function Profile({ data, update, onReset }) {
             <button
               key={h.id}
               onClick={() => toggleHabit(h.id)}
-              className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3.5"
+              className="flex items-center justify-between rounded-2xl border px-4 py-3.5"
+              style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
             >
-              <span className="flex items-center gap-2 text-[15px] text-white">
+              <span className="flex items-center gap-2 text-[15px]" style={{ color: 'var(--text)' }}>
                 <span>{h.emoji}</span>
                 {h.label}
               </span>
               <span
-                className={`h-6 w-10 rounded-full p-0.5 transition-colors ${
-                  h.enabled ? 'bg-accent' : 'bg-white/15'
-                }`}
+                className="h-6 w-10 rounded-full p-0.5 transition-colors"
+                style={{ background: h.enabled ? 'var(--color-accent)' : 'var(--toggle-off)' }}
               >
                 <span
                   className={`block h-5 w-5 rounded-full bg-white transition-transform ${
@@ -118,13 +137,14 @@ export default function Profile({ data, update, onReset }) {
       </Section>
 
       <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)} title="정말 초기화할까요?">
-        <p className="text-sm text-white/50">
+        <p className="text-sm" style={{ color: 'var(--text-2)' }}>
           모든 기록, 체중, 사진, 설정이 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
         </p>
         <div className="mt-6 flex gap-3">
           <button
             onClick={() => setConfirmOpen(false)}
-            className="flex-1 rounded-2xl border border-white/10 py-4 text-white/60"
+            className="flex-1 rounded-2xl border py-4"
+            style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
           >
             취소
           </button>
@@ -143,10 +163,29 @@ export default function Profile({ data, update, onReset }) {
   )
 }
 
+function ThemeButton({ active, onClick, icon: Icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-1 items-center justify-center gap-2 rounded-2xl border py-3.5 text-sm font-medium transition-colors"
+      style={{
+        borderColor: active ? 'var(--color-accent)' : 'var(--border)',
+        background: active ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'var(--surface-soft)',
+        color: active ? 'var(--color-accent)' : 'var(--text-2)',
+      }}
+    >
+      <Icon size={16} />
+      {label}
+    </button>
+  )
+}
+
 function Section({ title, children }) {
   return (
     <div className="mt-8">
-      <p className="mb-3 text-xs font-medium tracking-widest text-white/40">{title}</p>
+      <p className="mb-3 text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+        {title}
+      </p>
       {children}
     </div>
   )
@@ -155,7 +194,9 @@ function Section({ title, children }) {
 function Field({ label, children }) {
   return (
     <div className="mb-3">
-      <p className="mb-1.5 text-xs text-white/30">{label}</p>
+      <p className="mb-1.5 text-xs" style={{ color: 'var(--text-4)' }}>
+        {label}
+      </p>
       {children}
     </div>
   )

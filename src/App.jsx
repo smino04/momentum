@@ -3,7 +3,7 @@ import BottomNav from './components/BottomNav'
 import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
 import Progress from './pages/Progress'
-import Profile from './pages/Profile'
+import Settings from './pages/Settings'
 import { useAppData } from './utils/useAppData'
 
 export default function App() {
@@ -31,7 +31,7 @@ export default function App() {
     <div className="mx-auto min-h-screen max-w-md">
       {tab === 'home' && <Home data={data} update={update} />}
       {tab === 'progress' && <Progress data={data} update={update} />}
-      {tab === 'profile' && <Profile data={data} update={update} onReset={reset} />}
+      {tab === 'settings' && <Settings data={data} update={update} onReset={reset} />}
       <BottomNav active={tab} onChange={setTab} />
     </div>
   )

@@ -4,6 +4,7 @@ const STORAGE_KEY = 'moment_app_data'
 
 const DEFAULT_DATA = {
   onboarded: false,
+  theme: 'dark',
   profile: { name: '', height: '', weight: '', bodyFat: '' },
   leaveDate: '',
   habits: DEFAULT_HABITS,

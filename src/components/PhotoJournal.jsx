@@ -8,7 +8,7 @@ const ANGLES = [
 ]
 
 function weekLabel(index) {
-  return `WEEK ${String(index + 1).padStart(2, '0')}`
+  return `${index + 1}주차`
 }
 
 export default function PhotoJournal({ photos, onAdd }) {
@@ -40,18 +40,25 @@ export default function PhotoJournal({ photos, onAdd }) {
 
   return (
     <div>
-      <p className="text-xs font-medium tracking-widest text-white/40">📸 PHOTO JOURNAL</p>
-      <p className="mt-1 text-xs text-white/30">주 1회 기록을 권장합니다.</p>
+      <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+        📸 사진 기록
+      </p>
+      <p className="mt-1 text-xs" style={{ color: 'var(--text-4)' }}>
+        주 1회 기록을 권장합니다.
+      </p>
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {ANGLES.map((a) => (
           <button
             key={a.id}
             onClick={() => pickFile(a.id)}
-            className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-white/15 py-5 active:bg-white/5"
+            className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed py-5"
+            style={{ borderColor: 'var(--border)' }}
           >
-            <Camera size={18} className="text-white/40" />
-            <span className="text-[11px] text-white/50">{a.label}</span>
+            <Camera size={18} style={{ color: 'var(--text-3)' }} />
+            <span className="text-[11px]" style={{ color: 'var(--text-2)' }}>
+              {a.label}
+            </span>
           </button>
         ))}
       </div>
@@ -61,7 +68,9 @@ export default function PhotoJournal({ photos, onAdd }) {
         <div className="mt-5 flex gap-3 overflow-x-auto no-scrollbar pb-2">
           {weeks.map((week, i) => (
             <div key={i} className="flex-shrink-0">
-              <p className="mb-2 text-[10px] tracking-widest text-white/30">{weekLabel(i)}</p>
+              <p className="mb-2 text-[10px] tracking-widest" style={{ color: 'var(--text-4)' }}>
+                {weekLabel(i)}
+              </p>
               <div className="flex gap-1.5">
                 {week.map((p) => (
                   <img
@@ -78,7 +87,7 @@ export default function PhotoJournal({ photos, onAdd }) {
       )}
 
       {weeks.length === 0 && (
-        <div className="mt-4 flex items-center gap-2 text-white/25">
+        <div className="mt-4 flex items-center gap-2" style={{ color: 'var(--text-4)' }}>
           <Plus size={14} />
           <span className="text-xs">사진을 추가하면 주차별로 비교할 수 있어요.</span>
         </div>

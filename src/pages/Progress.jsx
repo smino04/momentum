@@ -41,17 +41,21 @@ export default function Progress({ data, update }) {
 
   return (
     <div className="px-6 pb-28 pt-8">
-      <p className="text-xs font-medium tracking-widest text-white/40">📈 YOUR PROGRESS</p>
+      <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+        📈 내 변화
+      </p>
 
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <StatBlock emoji="🔥" label="Momentum" value={momentum} />
+        <StatBlock emoji="🔥" label="모멘텀" value={momentum} />
         <StatBlock emoji="📅" label="관리일" value={`${activeDays}일`} />
         <StatBlock emoji="✅" label="완료율" value={`${completionRate}%`} />
       </div>
 
       <div className="mt-8">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-medium tracking-widest text-white/40">💪 BODY</p>
+          <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+            💪 체중
+          </p>
           <button
             onClick={() => setWeightModalOpen(true)}
             className="flex items-center gap-1 text-xs text-accent"
@@ -61,11 +65,14 @@ export default function Progress({ data, update }) {
         </div>
 
         <div className="mt-3 flex items-end gap-3">
-          <p className="text-4xl font-bold text-white">
+          <p className="text-4xl font-bold" style={{ color: 'var(--text)' }}>
             {typeof currentWeight === 'number' ? `${currentWeight} kg` : '—'}
           </p>
           {weightChange !== null && (
-            <p className={`pb-1 text-sm font-medium ${weightChange <= 0 ? 'text-accent' : 'text-white/50'}`}>
+            <p
+              className="pb-1 text-sm font-medium"
+              style={{ color: weightChange <= 0 ? 'var(--color-accent)' : 'var(--text-2)' }}
+            >
               {weightChange > 0 ? '+' : ''}
               {weightChange} kg
             </p>
@@ -90,9 +97,11 @@ export default function Progress({ data, update }) {
             placeholder="77.2"
             value={weightInput}
             onChange={(e) => setWeightInput(e.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-3xl font-bold text-white outline-none placeholder:text-white/20"
+            className="input-field py-4 text-3xl font-bold"
           />
-          <span className="pb-4 text-lg text-white/40">kg</span>
+          <span className="pb-4 text-lg" style={{ color: 'var(--text-3)' }}>
+            kg
+          </span>
         </div>
         <button
           onClick={saveWeight}
@@ -107,9 +116,11 @@ export default function Progress({ data, update }) {
 
 function StatBlock({ emoji, label, value }) {
   return (
-    <div className="rounded-[18px] bg-white/[0.04] px-3 py-4 text-center">
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="mt-1 text-[11px] text-white/40">
+    <div className="rounded-[18px] px-3 py-4 text-center" style={{ background: 'var(--surface)' }}>
+      <p className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
+        {value}
+      </p>
+      <p className="mt-1 text-[11px]" style={{ color: 'var(--text-3)' }}>
         {emoji} {label}
       </p>
     </div>
