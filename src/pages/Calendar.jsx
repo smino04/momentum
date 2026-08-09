@@ -25,7 +25,7 @@ function rangeLabel(o) {
     : `${formatShortDate(o.startDate)} ~ ${formatShortDate(o.endDate)}`
 }
 
-export default function Calendar({ data, update }) {
+export default function Calendar({ data, update, onRefresh }) {
   const today = todayKey()
   const now = new Date()
   const [viewYear, setViewYear] = useState(now.getFullYear())
@@ -92,7 +92,7 @@ export default function Calendar({ data, update }) {
 
   return (
     <div className="page-shell">
-      <PageHeader title="캘린더" />
+      <PageHeader title="캘린더" onClick={onRefresh} />
 
       {nextOuting ? (
         <div className="mt-6 rounded-2xl p-4" style={{ background: 'var(--surface)' }}>

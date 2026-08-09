@@ -1,33 +1,225 @@
 import { useState } from 'react'
-import { Trash2, Moon, Sun, Plus, X, ChevronUp, ChevronDown, Pencil } from 'lucide-react'
+import { Trash2, Moon, Sun, Plus, X, ChevronUp, ChevronDown, Pencil, ChevronRight, ChevronLeft, User, Palette, ListChecks, Database } from 'lucide-react'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
 import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP } from '../utils/constants'
 import { todayKey, formatShortDate } from '../utils/date'
 import { getNextOuting } from '../utils/outings'
 
-export default function Settings({ data, update, onReset, onNavigate }) {
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState(null)
-  const [formOpen, setFormOpen] = useState(false)
-  const [editingId, setEditingId] = useState(null)
-  const [formLabel, setFormLabel] = useState('')
-  const [formEmoji, setFormEmoji] = useState(HABIT_EMOJI_CHOICES[0])
+export default function Settings({ data, update, onReset, onNavigate, onRefresh }) {
+  const [view, setView] = useState('root')
   const isLight = data.theme === 'light'
+  const nextOuting = getNextOuting(data.outings, todayKey())
 
   const activeHabits = data.habits
     .filter((h) => h.active !== false)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
+  if (view === 'theme') {
+    return (
+      <div className="page-shell">
+        <SubHeader title="화면 모드" onBack={() => setView('root')} />
+        <ThemeView data={data} update={update} isLight={isLight} />
+      </div>
+    )
+  }
+
+  if (view === 'profile') {
+    return (
+      <div className="page-shell">
+        <SubHeader title="프로필" onBack={() => setView('root')} />
+        <ProfileView data={data} update={update} />
+      </div>
+    )
+  }
+
+  if (view === 'habits') {
+    return (
+      <div className="page-shell">
+        <SubHeader title="관리 항목" onBack={() => setView('root')} />
+        <HabitsView data={data} update={update} activeHabits={activeHabits} />
+      </div>
+    )
+  }
+
+  if (view === 'data') {
+    return (
+      <div className="page-shell">
+        <SubHeader title="데이터" onBack={() => setView('root')} />
+        <DataView onReset={onReset} />
+      </div>
+    )
+  }
+
+  return (
+    <div className="page-shell">
+      <PageHeader title="설정" onClick={onRefresh} />
+      <p className="mt-3 text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
+        {APP_NAME}
+      </p>
+      <p className="text-sm" style={{ color: 'var(--text-3)' }}>
+        {APP_TAGLINE}
+      </p>
+
+      <div className="mt-8 flex flex-col gap-2">
+        <MenuRow
+          icon={Palette}
+          label="화면 모드"
+          desc={isLight ? '라이트 모드' : '다크 모드'}
+          onClick={() => setView('theme')}
+        />
+        <MenuRow
+          icon={User}
+          label="프로필"
+          desc={data.profile.name || '이름 미설정'}
+          onClick={() => setView('profile')}
+        />
+        <MenuRow
+          icon={Sun}
+          label="휴가·외출·외박"
+          desc={nextOuting ? `다음 ${nextOuting.type} · ${formatShortDate(nextOuting.startDate)}` : '등록된 일정 없음'}
+          onClick={() => onNavigate?.('calendar')}
+        />
+        <MenuRow
+          icon={ListChecks}
+          label="관리 항목"
+          desc={`${activeHabits.length}개`}
+          onClick={() => setView('habits')}
+        />
+        <MenuRow icon={Database} label="데이터" desc="백업 · 초기화" onClick={() => setView('data')} />
+      </div>
+    </div>
+  )
+}
+
+function SubHeader({ title, onBack }) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={onBack}
+        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full active:opacity-60"
+        style={{ background: 'var(--surface)', color: 'var(--text-2)' }}
+      >
+        <ChevronLeft size={18} />
+      </button>
+      <h1 className="text-[26px] font-extrabold" style={{ color: 'var(--text)' }}>
+        {title}
+      </h1>
+    </div>
+  )
+}
+
+function MenuRow({ icon: Icon, label, desc, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5"
+      style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
+    >
+      <div
+        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
+        style={{ background: 'var(--surface)', color: 'var(--text-2)' }}
+      >
+        <Icon size={16} />
+      </div>
+      <div className="flex-1 text-left">
+        <p className="text-[15px] font-medium" style={{ color: 'var(--text)' }}>
+          {label}
+        </p>
+        <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+          {desc}
+        </p>
+      </div>
+      <ChevronRight size={16} style={{ color: 'var(--text-4)' }} />
+    </button>
+  )
+}
+
+function ThemeView({ data, update, isLight }) {
+  function setTheme(theme) {
+    update((prev) => ({ ...prev, theme }))
+  }
+
+  return (
+    <div className="mt-8 flex gap-2">
+      <ThemeButton active={!isLight} onClick={() => setTheme('dark')} icon={Moon} label="다크 모드" />
+      <ThemeButton active={isLight} onClick={() => setTheme('light')} icon={Sun} label="라이트 모드" />
+    </div>
+  )
+}
+
+function ThemeButton({ active, onClick, icon: Icon, label }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-1 items-center justify-center gap-2 rounded-2xl border py-3.5 text-sm font-medium transition-colors"
+      style={{
+        borderColor: active ? 'var(--color-accent)' : 'var(--border)',
+        background: active ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'var(--surface-soft)',
+        color: active ? 'var(--color-accent)' : 'var(--text-2)',
+      }}
+    >
+      <Icon size={16} />
+      {label}
+    </button>
+  )
+}
+
+function ProfileView({ data, update }) {
   function updateProfileField(field, value) {
     update((prev) => ({ ...prev, profile: { ...prev.profile, [field]: value } }))
   }
 
-  const nextOuting = getNextOuting(data.outings, todayKey())
+  return (
+    <div className="mt-8">
+      <Field label="이름">
+        <input
+          value={data.profile.name}
+          onChange={(e) => updateProfileField('name', e.target.value)}
+          placeholder="이름"
+          className="input-field"
+        />
+      </Field>
+      <Field label="키 (cm)">
+        <input
+          type="number"
+          inputMode="decimal"
+          value={data.profile.height}
+          onChange={(e) => updateProfileField('height', e.target.value)}
+          placeholder="예: 175"
+          className="input-field"
+        />
+      </Field>
+      <Field label="현재 체중 (kg)">
+        <input
+          type="number"
+          inputMode="decimal"
+          value={data.profile.weight}
+          onChange={(e) => updateProfileField('weight', e.target.value)}
+          placeholder="예: 77.2"
+          className="input-field"
+        />
+      </Field>
+      <Field label="체지방률 (%)">
+        <input
+          type="number"
+          inputMode="decimal"
+          value={data.profile.bodyFat}
+          onChange={(e) => updateProfileField('bodyFat', e.target.value)}
+          placeholder="예: 15"
+          className="input-field"
+        />
+      </Field>
+    </div>
+  )
+}
 
-  function setTheme(theme) {
-    update((prev) => ({ ...prev, theme }))
-  }
+function HabitsView({ data, update, activeHabits }) {
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [formOpen, setFormOpen] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [formLabel, setFormLabel] = useState('')
+  const [formEmoji, setFormEmoji] = useState(HABIT_EMOJI_CHOICES[0])
 
   function openAddForm() {
     setEditingId(null)
@@ -95,137 +287,56 @@ export default function Settings({ data, update, onReset, onNavigate }) {
   }
 
   return (
-    <div className="page-shell">
-      <PageHeader title="설정" />
-      <p className="mt-3 text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
-        {APP_NAME}
-      </p>
-      <p className="text-sm" style={{ color: 'var(--text-3)' }}>
-        {APP_TAGLINE}
-      </p>
-
-      <Section title="🌓 화면 모드">
-        <div className="flex gap-2">
-          <ThemeButton active={!isLight} onClick={() => setTheme('dark')} icon={Moon} label="다크 모드" />
-          <ThemeButton active={isLight} onClick={() => setTheme('light')} icon={Sun} label="라이트 모드" />
-        </div>
-      </Section>
-
-      <Section title="기본 정보">
-        <Field label="이름">
-          <input
-            value={data.profile.name}
-            onChange={(e) => updateProfileField('name', e.target.value)}
-            placeholder="이름"
-            className="input-field"
-          />
-        </Field>
-        <Field label="키 (cm)">
-          <input
-            type="number"
-            inputMode="decimal"
-            value={data.profile.height}
-            onChange={(e) => updateProfileField('height', e.target.value)}
-            placeholder="예: 175"
-            className="input-field"
-          />
-        </Field>
-        <Field label="현재 체중 (kg)">
-          <input
-            type="number"
-            inputMode="decimal"
-            value={data.profile.weight}
-            onChange={(e) => updateProfileField('weight', e.target.value)}
-            placeholder="예: 77.2"
-            className="input-field"
-          />
-        </Field>
-        <Field label="체지방률 (%)">
-          <input
-            type="number"
-            inputMode="decimal"
-            value={data.profile.bodyFat}
-            onChange={(e) => updateProfileField('bodyFat', e.target.value)}
-            placeholder="예: 15"
-            className="input-field"
-          />
-        </Field>
-      </Section>
-
-      <Section title="🌅 휴가/외출/외박">
-        <button
-          onClick={() => onNavigate?.('calendar')}
-          className="flex w-full items-center justify-between rounded-2xl border px-4 py-3.5"
-          style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
-        >
-          <span className="text-sm" style={{ color: 'var(--text-2)' }}>
-            {nextOuting ? `다음 ${nextOuting.type} · ${formatShortDate(nextOuting.startDate)}` : '등록된 일정 없음'}
-          </span>
-          <span className="text-xs font-medium text-accent">캘린더에서 관리 →</span>
-        </button>
-      </Section>
-
-      <Section title="✅ 관리 항목">
-        <div className="flex flex-col gap-2">
-          {activeHabits.map((h, idx) => (
-            <div
-              key={h.id}
-              className="flex items-center gap-1 rounded-2xl border px-2 py-2"
-              style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
-            >
-              <div className="flex flex-col">
-                <button
-                  onClick={() => moveHabit(h.id, -1)}
-                  disabled={idx === 0}
-                  style={{ color: 'var(--text-4)' }}
-                  className="disabled:opacity-20"
-                >
-                  <ChevronUp size={16} />
-                </button>
-                <button
-                  onClick={() => moveHabit(h.id, 1)}
-                  disabled={idx === activeHabits.length - 1}
-                  style={{ color: 'var(--text-4)' }}
-                  className="disabled:opacity-20"
-                >
-                  <ChevronDown size={16} />
-                </button>
-              </div>
+    <div className="mt-8">
+      <div className="flex flex-col gap-2">
+        {activeHabits.map((h, idx) => (
+          <div
+            key={h.id}
+            className="flex items-center gap-1 rounded-2xl border px-2 py-2"
+            style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
+          >
+            <div className="flex flex-col">
               <button
-                onClick={() => openEditForm(h)}
-                className="flex flex-1 items-center gap-2 px-2 py-1.5 text-left text-[15px]"
-                style={{ color: 'var(--text)' }}
+                onClick={() => moveHabit(h.id, -1)}
+                disabled={idx === 0}
+                style={{ color: 'var(--text-4)' }}
+                className="disabled:opacity-20"
               >
-                <span>{h.emoji}</span>
-                {h.label}
-                <Pencil size={12} style={{ color: 'var(--text-4)' }} />
+                <ChevronUp size={16} />
               </button>
-              <button onClick={() => setDeleteTarget(h.id)} className="p-2" style={{ color: 'var(--text-4)' }}>
-                <X size={16} />
+              <button
+                onClick={() => moveHabit(h.id, 1)}
+                disabled={idx === activeHabits.length - 1}
+                style={{ color: 'var(--text-4)' }}
+                className="disabled:opacity-20"
+              >
+                <ChevronDown size={16} />
               </button>
             </div>
-          ))}
-        </div>
+            <button
+              onClick={() => openEditForm(h)}
+              className="flex flex-1 items-center gap-2 px-2 py-1.5 text-left text-[15px]"
+              style={{ color: 'var(--text)' }}
+            >
+              <span>{h.emoji}</span>
+              {h.label}
+              <Pencil size={12} style={{ color: 'var(--text-4)' }} />
+            </button>
+            <button onClick={() => setDeleteTarget(h.id)} className="p-2" style={{ color: 'var(--text-4)' }}>
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
 
-        <button
-          onClick={openAddForm}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed py-3.5 text-sm"
-          style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
-        >
-          <Plus size={16} />
-          관리항목 추가
-        </button>
-      </Section>
-
-      <Section title="데이터">
-        <button
-          onClick={() => setConfirmOpen(true)}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 py-4 text-red-400"
-        >
-          <Trash2 size={16} />
-          모든 데이터 초기화
-        </button>
-      </Section>
+      <button
+        onClick={openAddForm}
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed py-3.5 text-sm"
+        style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
+      >
+        <Plus size={16} />
+        관리항목 추가
+      </button>
 
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editingId ? '항목 수정' : '항목 추가'}>
         <input
@@ -288,6 +399,22 @@ export default function Settings({ data, update, onReset, onNavigate }) {
           </button>
         </div>
       </Modal>
+    </div>
+  )
+}
+
+function DataView({ onReset }) {
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  return (
+    <div className="mt-8">
+      <button
+        onClick={() => setConfirmOpen(true)}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 py-4 text-red-400"
+      >
+        <Trash2 size={16} />
+        모든 데이터 초기화
+      </button>
 
       <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)} title="정말 초기화할까요?">
         <p className="text-sm" style={{ color: 'var(--text-2)' }}>
@@ -312,34 +439,6 @@ export default function Settings({ data, update, onReset, onNavigate }) {
           </button>
         </div>
       </Modal>
-    </div>
-  )
-}
-
-function ThemeButton({ active, onClick, icon: Icon, label }) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex flex-1 items-center justify-center gap-2 rounded-2xl border py-3.5 text-sm font-medium transition-colors"
-      style={{
-        borderColor: active ? 'var(--color-accent)' : 'var(--border)',
-        background: active ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'var(--surface-soft)',
-        color: active ? 'var(--color-accent)' : 'var(--text-2)',
-      }}
-    >
-      <Icon size={16} />
-      {label}
-    </button>
-  )
-}
-
-function Section({ title, children }) {
-  return (
-    <div className="mt-8">
-      <p className="mb-3 text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
-        {title}
-      </p>
-      {children}
     </div>
   )
 }

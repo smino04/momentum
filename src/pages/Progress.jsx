@@ -13,7 +13,7 @@ import { calcConditionInsight } from '../utils/insights'
 import { getNextOuting } from '../utils/outings'
 import { CONDITION_FIELDS, CONDITION_SCALE } from '../utils/constants'
 
-export default function Progress({ data, update }) {
+export default function Progress({ data, update, onRefresh }) {
   const today = todayKey()
   const [weightModalOpen, setWeightModalOpen] = useState(false)
   const [weightInput, setWeightInput] = useState('')
@@ -81,7 +81,7 @@ export default function Progress({ data, update }) {
 
   return (
     <div className="page-shell">
-      <PageHeader title="진행상황" />
+      <PageHeader title="진행상황" onClick={onRefresh} />
 
       <div className="mt-6 grid grid-cols-2 gap-2">
         <StatBlock emoji="🔥" label="연속 기록" value={`${streak}일`} />

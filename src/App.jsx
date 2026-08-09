@@ -7,10 +7,16 @@ import Progress from './pages/Progress'
 import Calendar from './pages/Calendar'
 import Settings from './pages/Settings'
 import { useAppData } from './utils/useAppData'
+import { CURRENT_TAB_KEY } from './utils/constants'
 
 export default function App() {
   const { data, update, reset } = useAppData()
-  const [tab, setTab] = useState('home')
+  const [tab] = useState(() => localStorage.getItem(CURRENT_TAB_KEY) || 'home')
+
+  function navigate(tabId) {
+    localStorage.setItem(CURRENT_TAB_KEY, tabId)
+    window.location.reload()
+  }
 
   if (!data.onboarded) {
     return (
@@ -39,11 +45,13 @@ export default function App() {
     <>
       <Splash />
       <div className="mx-auto min-h-screen max-w-md">
-        {tab === 'home' && <Home data={data} update={update} />}
-        {tab === 'progress' && <Progress data={data} update={update} />}
-        {tab === 'calendar' && <Calendar data={data} update={update} />}
-        {tab === 'settings' && <Settings data={data} update={update} onReset={reset} onNavigate={setTab} />}
-        <BottomNav active={tab} onChange={setTab} />
+        {tab === 'home' && <Home data={data} update={update} onRefresh={() => navigate('home')} />}
+        {tab === 'progress' && <Progress data={data} update={update} onRefresh={() => navigate('progress')} />}
+        {tab === 'calendar' && <Calendar data={data} update={update} onRefresh={() => navigate('calendar')} />}
+        {tab === 'settings' && (
+          <Settings data={data} update={update} onReset={reset} onNavigate={navigate} onRefresh={() => navigate('settings')} />
+        )}
+        <BottomNav active={tab} />
       </div>
     </>
   )

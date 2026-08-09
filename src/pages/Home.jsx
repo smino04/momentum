@@ -12,7 +12,7 @@ import { calcMomentum, todayCompletionRate, calculateCurrentStreak } from '../ut
 import { getNextOuting, outingDday } from '../utils/outings'
 import { STREAK_MILESTONE_MESSAGES } from '../utils/constants'
 
-export default function Home({ data, update }) {
+export default function Home({ data, update, onRefresh }) {
   const today = todayKey()
   const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
   const dday = outingDday(nextOuting, today)
@@ -102,7 +102,7 @@ export default function Home({ data, update }) {
 
   return (
     <div className="page-shell">
-      <PageHeader title="홈" />
+      <PageHeader title="홈" onClick={onRefresh} />
 
       <div className="mt-6">
         <Countdown date={nextOuting?.startDate} dday={dday} label={nextOuting?.type ?? '휴가'} />
