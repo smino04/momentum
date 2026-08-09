@@ -11,6 +11,7 @@ const DEFAULT_DATA = {
   dailyLogs: {},
   weightLogs: [],
   photos: [],
+  lastSeenStreak: 0,
 }
 
 export function loadData() {

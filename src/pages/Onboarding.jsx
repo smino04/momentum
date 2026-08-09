@@ -6,21 +6,22 @@ import { todayKey } from '../utils/date'
 export default function Onboarding({ onComplete }) {
   const [step, setStep] = useState(1)
   const [leaveDate, setLeaveDate] = useState('')
-  const [habits, setHabits] = useState(DEFAULT_HABITS.map((h) => ({ ...h })))
+  const [habits, setHabits] = useState(DEFAULT_HABITS.map((h) => ({ ...h, active: true })))
   const [weight, setWeight] = useState('')
   const [bodyFat, setBodyFat] = useState('')
   const [height, setHeight] = useState('')
 
   function toggleHabit(id) {
-    setHabits((prev) => prev.map((h) => (h.id === id ? { ...h, enabled: !h.enabled } : h)))
+    setHabits((prev) => prev.map((h) => (h.id === id ? { ...h, active: !h.active } : h)))
   }
 
   function finish() {
+    const createdAt = todayKey()
     onComplete({
       leaveDate,
-      habits,
+      habits: habits.map((h) => ({ ...h, createdAt })),
       profile: { name: '', height, weight, bodyFat },
-      weightLogs: weight ? [{ date: todayKey(), weight: parseFloat(weight) }] : [],
+      weightLogs: weight ? [{ date: createdAt, weight: parseFloat(weight) }] : [],
     })
   }
 
@@ -58,8 +59,8 @@ export default function Onboarding({ onComplete }) {
                   onClick={() => toggleHabit(h.id)}
                   className="flex items-center justify-between rounded-2xl border px-4 py-4 text-left transition-colors"
                   style={{
-                    borderColor: h.enabled ? 'var(--color-accent)' : 'var(--border)',
-                    background: h.enabled
+                    borderColor: h.active ? 'var(--color-accent)' : 'var(--border)',
+                    background: h.active
                       ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)'
                       : 'var(--surface-soft)',
                   }}
@@ -69,11 +70,11 @@ export default function Onboarding({ onComplete }) {
                   </span>
                   <span
                     className="h-6 w-10 rounded-full p-0.5 transition-colors"
-                    style={{ background: h.enabled ? 'var(--color-accent)' : 'var(--toggle-off)' }}
+                    style={{ background: h.active ? 'var(--color-accent)' : 'var(--toggle-off)' }}
                   >
                     <span
                       className={`block h-5 w-5 rounded-full bg-white transition-transform ${
-                        h.enabled ? 'translate-x-4' : 'translate-x-0'
+                        h.active ? 'translate-x-4' : 'translate-x-0'
                       }`}
                     />
                   </span>

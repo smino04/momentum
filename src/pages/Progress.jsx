@@ -3,8 +3,8 @@ import { Plus } from 'lucide-react'
 import WeightChart from '../components/WeightChart'
 import PhotoJournal from '../components/PhotoJournal'
 import Modal from '../components/Modal'
-import { todayKey, addDays } from '../utils/date'
-import { calcMomentum, activeDaysCount, calcStreak } from '../utils/momentum'
+import { todayKey, addDays, daysBetween } from '../utils/date'
+import { calcMomentum, calcLifetimeCompletion, calculateCurrentStreak, calculateBestStreak } from '../utils/momentum'
 
 export default function Progress({ data, update }) {
   const today = todayKey()
@@ -12,9 +12,20 @@ export default function Progress({ data, update }) {
   const [weightInput, setWeightInput] = useState('')
 
   const momentum = useMemo(() => calcMomentum(data.dailyLogs, data.habits, today), [data.dailyLogs, data.habits])
-  const activeDays = useMemo(() => activeDaysCount(data.dailyLogs, data.habits, today), [data.dailyLogs, data.habits])
-  const { streak } = useMemo(() => calcStreak(data.dailyLogs, data.habits, today), [data.dailyLogs, data.habits])
-  const completionRate = Math.round(momentum)
+  const { streak } = useMemo(
+    () => calculateCurrentStreak(data.dailyLogs, data.habits, today),
+    [data.dailyLogs, data.habits]
+  )
+  const bestStreak = useMemo(
+    () => calculateBestStreak(data.dailyLogs, data.habits, today),
+    [data.dailyLogs, data.habits]
+  )
+  const { rate: completionRate, successDays, totalDays } = useMemo(
+    () => calcLifetimeCompletion(data.dailyLogs, data.habits, today),
+    [data.dailyLogs, data.habits]
+  )
+
+  const dday = data.leaveDate && data.leaveDate >= today ? daysBetween(today, data.leaveDate) : null
 
   const sortedWeights = [...data.weightLogs].sort((a, b) => a.date.localeCompare(b.date))
   const currentWeight = sortedWeights[sortedWeights.length - 1]?.weight
@@ -48,10 +59,36 @@ export default function Progress({ data, update }) {
 
       <div className="mt-4 grid grid-cols-2 gap-2">
         <StatBlock emoji="🔥" label="연속 기록" value={`${streak}일`} />
+        <StatBlock emoji="🏆" label="최고 기록" value={`${bestStreak}일`} />
         <StatBlock emoji="⚡" label="모멘텀" value={momentum} />
-        <StatBlock emoji="📅" label="관리일" value={`${activeDays}일`} />
         <StatBlock emoji="✅" label="완료율" value={`${completionRate}%`} />
       </div>
+
+      {dday !== null && (
+        <div className="mt-3 rounded-[18px] px-4 py-4" style={{ background: 'var(--surface)' }}>
+          <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+            🎯 휴가 챌린지
+          </p>
+          <div className="mt-2 flex items-center justify-between">
+            <div>
+              <p className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
+                D-{dday}
+              </p>
+              <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+                휴가까지 남은 날
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-accent">
+                {successDays} / {totalDays}
+              </p>
+              <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+                지금까지 성공한 날
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-8">
         <div className="flex items-center justify-between">

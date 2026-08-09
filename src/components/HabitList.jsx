@@ -1,9 +1,11 @@
 import HabitRow from './HabitRow'
 
 export default function HabitList({ habits, log, onToggle }) {
-  const enabled = habits.filter((h) => h.enabled)
+  const active = habits
+    .filter((h) => h.active !== false)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   const groups = []
-  for (const h of enabled) {
+  for (const h of active) {
     let group = groups.find((g) => g.name === h.group)
     if (!group) {
       group = { name: h.group, items: [] }
@@ -12,7 +14,7 @@ export default function HabitList({ habits, log, onToggle }) {
     group.items.push(h)
   }
 
-  if (enabled.length === 0) {
+  if (active.length === 0) {
     return (
       <p className="py-6 text-sm" style={{ color: 'var(--text-3)' }}>
         관리 항목이 없습니다. 설정에서 추가해보세요.

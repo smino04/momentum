@@ -1,11 +1,13 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Countdown from '../components/Countdown'
 import HabitList from '../components/HabitList'
 import MomentumCard from '../components/MomentumCard'
 import RecoveryCard from '../components/RecoveryCard'
 import StreakBadge from '../components/StreakBadge'
+import CelebrationModal from '../components/CelebrationModal'
 import { todayKey, formatMonthDay, leaveDDay, addDays } from '../utils/date'
-import { calcMomentum, todayCompletionRate, calcStreak } from '../utils/momentum'
+import { calcMomentum, todayCompletionRate, calculateCurrentStreak } from '../utils/momentum'
+import { STREAK_MILESTONE_MESSAGES } from '../utils/constants'
 
 export default function Home({ data, update }) {
   const today = todayKey()
@@ -22,12 +24,38 @@ export default function Home({ data, update }) {
   const delta = momentum - momentumPrev
 
   const { streak, todayDone } = useMemo(
-    () => calcStreak(data.dailyLogs, data.habits, today),
+    () => calculateCurrentStreak(data.dailyLogs, data.habits, today),
     [data.dailyLogs, data.habits]
   )
 
   const completion = todayCompletionRate(data.dailyLogs, data.habits, today)
   const showRecovery = completion <= 0.4
+
+  const [celebration, setCelebration] = useState({ open: false })
+  const prevTodayDoneRef = useRef(todayDone)
+  const lossCheckedRef = useRef(false)
+
+  useEffect(() => {
+    if (lossCheckedRef.current) return
+    lossCheckedRef.current = true
+    const confirmedStreak = todayDone ? streak - 1 : streak
+    if (data.lastSeenStreak > 0 && confirmedStreak === 0) {
+      setCelebration({ open: true, kind: 'loss' })
+      update((prev) => ({ ...prev, lastSeenStreak: 0 }))
+    } else if (data.lastSeenStreak !== confirmedStreak) {
+      update((prev) => ({ ...prev, lastSeenStreak: confirmedStreak }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (!prevTodayDoneRef.current && todayDone) {
+      setCelebration({ open: true, kind: 'complete', streak, milestoneMessage: STREAK_MILESTONE_MESSAGES[streak] })
+      update((prev) => ({ ...prev, lastSeenStreak: streak }))
+    }
+    prevTodayDoneRef.current = todayDone
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayDone])
 
   function toggleHabit(habitId) {
     update((prev) => {
@@ -71,6 +99,14 @@ export default function Home({ data, update }) {
       <div className="mt-8">
         <MomentumCard momentum={momentum} delta={delta} />
       </div>
+
+      <CelebrationModal
+        open={celebration.open}
+        onClose={() => setCelebration({ open: false })}
+        kind={celebration.kind}
+        streak={celebration.streak}
+        milestoneMessage={celebration.milestoneMessage}
+      />
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import { useRef } from 'react'
 import { Camera, Plus } from 'lucide-react'
+import { todayKey } from '../utils/date'
 
 const ANGLES = [
-  { id: 'front', label: '정면' },
-  { id: 'side', label: '측면' },
+  { id: 'face', label: '얼굴' },
   { id: 'body', label: '전신' },
 ]
 
@@ -13,7 +13,7 @@ function weekLabel(index) {
 
 export default function PhotoJournal({ photos, onAdd }) {
   const fileInputRef = useRef(null)
-  const pendingAngle = useRef('front')
+  const pendingAngle = useRef('face')
 
   const weeks = groupByWeek(photos)
 
@@ -31,7 +31,7 @@ export default function PhotoJournal({ photos, onAdd }) {
       onAdd({
         id: Date.now().toString(),
         angle: pendingAngle.current,
-        date: new Date().toISOString().slice(0, 10),
+        date: todayKey(),
         dataUrl: reader.result,
       })
     }
@@ -47,7 +47,7 @@ export default function PhotoJournal({ photos, onAdd }) {
         주 1회 기록을 권장합니다.
       </p>
 
-      <div className="mt-3 grid grid-cols-3 gap-2">
+      <div className="mt-3 grid grid-cols-2 gap-2">
         {ANGLES.map((a) => (
           <button
             key={a.id}

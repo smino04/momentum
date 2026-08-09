@@ -2,11 +2,14 @@ export const APP_NAME = '말출'
 export const APP_TAGLINE = '다음 휴가까지, 더 나은 나.'
 
 export const DEFAULT_HABITS = [
-  { id: 'skin', label: '피부관리', emoji: '🧴', group: '피부', enabled: true },
-  { id: 'workout', label: '운동', emoji: '💪', group: '신체', enabled: true },
-  { id: 'cardio', label: '유산소', emoji: '🏃', group: '신체', enabled: true },
-  { id: 'diet', label: '식단', emoji: '🍽️', group: '신체', enabled: true },
-  { id: 'grooming', label: '그루밍', emoji: '✨', group: '그루밍', enabled: true },
+  { id: 'skin', label: '피부관리', emoji: '🧴', group: '피부', order: 0 },
+  { id: 'workout', label: '운동', emoji: '🏋️', group: '신체', order: 1 },
+  { id: 'cardio', label: '유산소', emoji: '🏃', group: '신체', order: 2 },
+  { id: 'diet', label: '식단', emoji: '🥗', group: '신체', order: 3 },
+  { id: 'no_snack', label: '군것질 X', emoji: '🚫', group: '신체', order: 4 },
+  { id: 'sleep', label: '수면', emoji: '😴', group: '라이프스타일', order: 5 },
+  { id: 'posture', label: '자세', emoji: '🧍', group: '라이프스타일', order: 6 },
+  { id: 'grooming', label: '그루밍', emoji: '✂️', group: '그루밍', order: 7 },
 ]
 
 export const RECOVERY_ITEMS = [
@@ -17,6 +20,20 @@ export const RECOVERY_ITEMS = [
 
 export const ACCENT = '#FF7A45'
 
-export const HABIT_EMOJI_CHOICES = ['⭐', '🧴', '💪', '🏃', '🍽️', '✨', '💧', '📚', '😴', '🚭', '🦷', '🧘']
+export const HABIT_EMOJI_CHOICES = [
+  '🧴', '🏋️', '🏃', '🥗', '🚫', '😴', '🧍', '✂️', '💧', '📚', '🧘', '☀️', '🪥', '💊', '⭐',
+]
 
 export const CUSTOM_HABIT_GROUP = '기타'
+
+export const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100]
+
+export const STREAK_MILESTONE_MESSAGES = {
+  3: '3일을 만들었습니다.',
+  7: '일주일을 만들었습니다.',
+  14: '2주를 버텼습니다.',
+  21: '3주째, 이제 습관입니다.',
+  30: '30일 동안 자신을 관리했습니다.',
+  50: '50일, 꾸준함이 무기입니다.',
+  100: '100일. 완전히 달라졌습니다.',
+}

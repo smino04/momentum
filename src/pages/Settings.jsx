@@ -1,14 +1,21 @@
 import { useState } from 'react'
-import { Trash2, Moon, Sun, Plus, X } from 'lucide-react'
+import { Trash2, Moon, Sun, Plus, X, ChevronUp, ChevronDown, Pencil } from 'lucide-react'
 import Modal from '../components/Modal'
 import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP } from '../utils/constants'
+import { todayKey } from '../utils/date'
 
 export default function Settings({ data, update, onReset }) {
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [newLabel, setNewLabel] = useState('')
-  const [newEmoji, setNewEmoji] = useState(HABIT_EMOJI_CHOICES[0])
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [formOpen, setFormOpen] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [formLabel, setFormLabel] = useState('')
+  const [formEmoji, setFormEmoji] = useState(HABIT_EMOJI_CHOICES[0])
   const isLight = data.theme === 'light'
+
+  const activeHabits = data.habits
+    .filter((h) => h.active !== false)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
   function updateProfileField(field, value) {
     update((prev) => ({ ...prev, profile: { ...prev.profile, [field]: value } }))
@@ -18,35 +25,73 @@ export default function Settings({ data, update, onReset }) {
     update((prev) => ({ ...prev, leaveDate: value }))
   }
 
-  function toggleHabit(id) {
-    update((prev) => ({
-      ...prev,
-      habits: prev.habits.map((h) => (h.id === id ? { ...h, enabled: !h.enabled } : h)),
-    }))
-  }
-
-  function removeHabit(id) {
-    update((prev) => ({ ...prev, habits: prev.habits.filter((h) => h.id !== id) }))
-  }
-
-  function addHabit() {
-    const label = newLabel.trim()
-    if (!label) return
-    const habit = {
-      id: `custom-${Date.now()}`,
-      label,
-      emoji: newEmoji,
-      group: CUSTOM_HABIT_GROUP,
-      enabled: true,
-    }
-    update((prev) => ({ ...prev, habits: [...prev.habits, habit] }))
-    setNewLabel('')
-    setNewEmoji(HABIT_EMOJI_CHOICES[0])
-    setShowAddForm(false)
-  }
-
   function setTheme(theme) {
     update((prev) => ({ ...prev, theme }))
+  }
+
+  function openAddForm() {
+    setEditingId(null)
+    setFormLabel('')
+    setFormEmoji(HABIT_EMOJI_CHOICES[0])
+    setFormOpen(true)
+  }
+
+  function openEditForm(habit) {
+    setEditingId(habit.id)
+    setFormLabel(habit.label)
+    setFormEmoji(habit.emoji)
+    setFormOpen(true)
+  }
+
+  function saveHabitForm() {
+    const label = formLabel.trim()
+    if (!label) return
+
+    if (editingId) {
+      update((prev) => ({
+        ...prev,
+        habits: prev.habits.map((h) => (h.id === editingId ? { ...h, label, emoji: formEmoji } : h)),
+      }))
+    } else {
+      const maxOrder = activeHabits.reduce((max, h) => Math.max(max, h.order ?? 0), -1)
+      const habit = {
+        id: `custom-${Date.now()}`,
+        label,
+        emoji: formEmoji,
+        group: CUSTOM_HABIT_GROUP,
+        order: maxOrder + 1,
+        active: true,
+        createdAt: todayKey(),
+      }
+      update((prev) => ({ ...prev, habits: [...prev.habits, habit] }))
+    }
+    setFormOpen(false)
+  }
+
+  function confirmDeleteHabit() {
+    update((prev) => ({
+      ...prev,
+      habits: prev.habits.map((h) => (h.id === deleteTarget ? { ...h, active: false } : h)),
+    }))
+    setDeleteTarget(null)
+  }
+
+  function moveHabit(id, direction) {
+    const idx = activeHabits.findIndex((h) => h.id === id)
+    const swapIdx = idx + direction
+    if (swapIdx < 0 || swapIdx >= activeHabits.length) return
+    const a = activeHabits[idx]
+    const b = activeHabits[swapIdx]
+    const aOrder = a.order ?? idx
+    const bOrder = b.order ?? swapIdx
+    update((prev) => ({
+      ...prev,
+      habits: prev.habits.map((h) => {
+        if (h.id === a.id) return { ...h, order: bOrder }
+        if (h.id === b.id) return { ...h, order: aOrder }
+        return h
+      }),
+    }))
   }
 
   return (
@@ -123,93 +168,54 @@ export default function Settings({ data, update, onReset }) {
 
       <Section title="✅ 관리 항목">
         <div className="flex flex-col gap-2">
-          {data.habits.map((h) => (
+          {activeHabits.map((h, idx) => (
             <div
               key={h.id}
-              className="flex items-center justify-between rounded-2xl border px-4 py-3.5"
+              className="flex items-center gap-1 rounded-2xl border px-2 py-2"
               style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
             >
-              <span className="flex items-center gap-2 text-[15px]" style={{ color: 'var(--text)' }}>
-                <span>{h.emoji}</span>
-                {h.label}
-              </span>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col">
                 <button
-                  onClick={() => toggleHabit(h.id)}
-                  className="h-6 w-10 rounded-full p-0.5 transition-colors"
-                  style={{ background: h.enabled ? 'var(--color-accent)' : 'var(--toggle-off)' }}
+                  onClick={() => moveHabit(h.id, -1)}
+                  disabled={idx === 0}
+                  style={{ color: 'var(--text-4)' }}
+                  className="disabled:opacity-20"
                 >
-                  <span
-                    className={`block h-5 w-5 rounded-full bg-white transition-transform ${
-                      h.enabled ? 'translate-x-4' : 'translate-x-0'
-                    }`}
-                  />
+                  <ChevronUp size={16} />
                 </button>
-                <button onClick={() => removeHabit(h.id)} style={{ color: 'var(--text-4)' }}>
-                  <X size={16} />
+                <button
+                  onClick={() => moveHabit(h.id, 1)}
+                  disabled={idx === activeHabits.length - 1}
+                  style={{ color: 'var(--text-4)' }}
+                  className="disabled:opacity-20"
+                >
+                  <ChevronDown size={16} />
                 </button>
               </div>
+              <button
+                onClick={() => openEditForm(h)}
+                className="flex flex-1 items-center gap-2 px-2 py-1.5 text-left text-[15px]"
+                style={{ color: 'var(--text)' }}
+              >
+                <span>{h.emoji}</span>
+                {h.label}
+                <Pencil size={12} style={{ color: 'var(--text-4)' }} />
+              </button>
+              <button onClick={() => setDeleteTarget(h.id)} className="p-2" style={{ color: 'var(--text-4)' }}>
+                <X size={16} />
+              </button>
             </div>
           ))}
         </div>
 
-        {showAddForm ? (
-          <div
-            className="mt-3 rounded-2xl border p-4"
-            style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
-          >
-            <input
-              autoFocus
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              placeholder="항목 이름 (예: 자기 전 독서)"
-              className="input-field"
-            />
-            <div className="mt-3 flex flex-wrap gap-2">
-              {HABIT_EMOJI_CHOICES.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => setNewEmoji(emoji)}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border text-lg"
-                  style={{
-                    borderColor: newEmoji === emoji ? 'var(--color-accent)' : 'var(--border)',
-                    background:
-                      newEmoji === emoji
-                        ? 'color-mix(in srgb, var(--color-accent) 15%, transparent)'
-                        : 'transparent',
-                  }}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="flex-1 rounded-2xl border py-3 text-sm"
-                style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
-              >
-                취소
-              </button>
-              <button
-                onClick={addHabit}
-                disabled={!newLabel.trim()}
-                className="flex-1 rounded-2xl bg-accent py-3 text-sm font-semibold text-white disabled:opacity-30"
-              >
-                추가
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed py-3.5 text-sm"
-            style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
-          >
-            <Plus size={16} />
-            항목 추가
-          </button>
-        )}
+        <button
+          onClick={openAddForm}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed py-3.5 text-sm"
+          style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
+        >
+          <Plus size={16} />
+          관리항목 추가
+        </button>
       </Section>
 
       <Section title="데이터">
@@ -221,6 +227,68 @@ export default function Settings({ data, update, onReset }) {
           모든 데이터 초기화
         </button>
       </Section>
+
+      <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editingId ? '항목 수정' : '항목 추가'}>
+        <input
+          autoFocus
+          value={formLabel}
+          onChange={(e) => setFormLabel(e.target.value)}
+          placeholder="항목 이름 (예: 자기 전 독서)"
+          className="input-field"
+        />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {HABIT_EMOJI_CHOICES.map((emoji) => (
+            <button
+              key={emoji}
+              onClick={() => setFormEmoji(emoji)}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border text-lg"
+              style={{
+                borderColor: formEmoji === emoji ? 'var(--color-accent)' : 'var(--border)',
+                background:
+                  formEmoji === emoji
+                    ? 'color-mix(in srgb, var(--color-accent) 15%, transparent)'
+                    : 'transparent',
+              }}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={() => setFormOpen(false)}
+            className="flex-1 rounded-2xl border py-3 text-sm"
+            style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
+          >
+            취소
+          </button>
+          <button
+            onClick={saveHabitForm}
+            disabled={!formLabel.trim()}
+            className="flex-1 rounded-2xl bg-accent py-3 text-sm font-semibold text-white disabled:opacity-30"
+          >
+            {editingId ? '저장' : '추가'}
+          </button>
+        </div>
+      </Modal>
+
+      <Modal open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} title="이 관리항목을 삭제할까요?">
+        <p className="text-sm" style={{ color: 'var(--text-2)' }}>
+          기존 기록은 유지됩니다.
+        </p>
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={() => setDeleteTarget(null)}
+            className="flex-1 rounded-2xl border py-4"
+            style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
+          >
+            취소
+          </button>
+          <button onClick={confirmDeleteHabit} className="flex-1 rounded-2xl bg-red-500 py-4 font-semibold text-white">
+            삭제
+          </button>
+        </div>
+      </Modal>
 
       <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)} title="정말 초기화할까요?">
         <p className="text-sm" style={{ color: 'var(--text-2)' }}>
