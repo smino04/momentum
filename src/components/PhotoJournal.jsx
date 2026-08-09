@@ -1,0 +1,102 @@
+import { useRef } from 'react'
+import { Camera, Plus } from 'lucide-react'
+
+const ANGLES = [
+  { id: 'front', label: '정면' },
+  { id: 'side', label: '측면' },
+  { id: 'body', label: '전신' },
+]
+
+function weekLabel(index) {
+  return `WEEK ${String(index + 1).padStart(2, '0')}`
+}
+
+export default function PhotoJournal({ photos, onAdd }) {
+  const fileInputRef = useRef(null)
+  const pendingAngle = useRef('front')
+
+  const weeks = groupByWeek(photos)
+
+  function pickFile(angle) {
+    pendingAngle.current = angle
+    fileInputRef.current?.click()
+  }
+
+  function handleFile(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      onAdd({
+        id: Date.now().toString(),
+        angle: pendingAngle.current,
+        date: new Date().toISOString().slice(0, 10),
+        dataUrl: reader.result,
+      })
+    }
+    reader.readAsDataURL(file)
+  }
+
+  return (
+    <div>
+      <p className="text-xs font-medium tracking-widest text-white/40">PHOTO JOURNAL</p>
+      <p className="mt-1 text-xs text-white/30">주 1회 기록을 권장합니다.</p>
+
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {ANGLES.map((a) => (
+          <button
+            key={a.id}
+            onClick={() => pickFile(a.id)}
+            className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-white/15 py-5 active:bg-white/5"
+          >
+            <Camera size={18} className="text-white/40" />
+            <span className="text-[11px] text-white/50">{a.label}</span>
+          </button>
+        ))}
+      </div>
+      <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFile} />
+
+      {weeks.length > 0 && (
+        <div className="mt-5 flex gap-3 overflow-x-auto no-scrollbar pb-2">
+          {weeks.map((week, i) => (
+            <div key={i} className="flex-shrink-0">
+              <p className="mb-2 text-[10px] tracking-widest text-white/30">{weekLabel(i)}</p>
+              <div className="flex gap-1.5">
+                {week.map((p) => (
+                  <img
+                    key={p.id}
+                    src={p.dataUrl}
+                    alt={p.angle}
+                    className="h-20 w-16 rounded-lg object-cover"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {weeks.length === 0 && (
+        <div className="mt-4 flex items-center gap-2 text-white/25">
+          <Plus size={14} />
+          <span className="text-xs">사진을 추가하면 주차별로 비교할 수 있어요.</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function groupByWeek(photos) {
+  if (!photos || photos.length === 0) return []
+  const sorted = [...photos].sort((a, b) => a.date.localeCompare(b.date))
+  const first = new Date(sorted[0].date)
+  const buckets = new Map()
+  for (const p of sorted) {
+    const d = new Date(p.date)
+    const weekIndex = Math.floor((d - first) / (7 * 24 * 60 * 60 * 1000))
+    if (!buckets.has(weekIndex)) buckets.set(weekIndex, [])
+    buckets.get(weekIndex).push(p)
+  }
+  return [...buckets.keys()].sort((a, b) => a - b).map((k) => buckets.get(k))
+}
