@@ -1,27 +1,35 @@
 import { lastNDays, addDays, daysBetween } from './date'
 
-const MIN_100PCT_HABIT_COUNT = 2
-const SUCCESS_RATIO = 0.8
-
 function habitsActiveOn(habits, dayKey) {
   return habits.filter((h) => h.active !== false && (!h.createdAt || h.createdAt <= dayKey))
+}
+
+export function isHabitDueOn(habit, dayKey) {
+  if (habit.frequency !== 'everyOther') return true
+  const anchor = habit.createdAt || dayKey
+  if (dayKey < anchor) return true
+  return daysBetween(anchor, dayKey) % 2 === 0
+}
+
+function dueHabitsOn(habits, dayKey) {
+  return habitsActiveOn(habits, dayKey).filter((h) => isHabitDueOn(h, dayKey))
 }
 
 export function isDayComplete(dailyLogs, habits, dayKey) {
   const activeHabits = habitsActiveOn(habits, dayKey)
   if (activeHabits.length === 0) return false
+  const dueHabits = dueHabitsOn(habits, dayKey)
+  if (dueHabits.length === 0) return true
   const log = dailyLogs[dayKey] || {}
-  const completed = activeHabits.filter((h) => log[h.id]).length
-  const requiredRatio = activeHabits.length <= MIN_100PCT_HABIT_COUNT ? 1 : SUCCESS_RATIO
-  return completed / activeHabits.length >= requiredRatio
+  return dueHabits.every((h) => log[h.id])
 }
 
 export function todayCompletionRate(dailyLogs, habits, dayKey) {
-  const activeHabits = habitsActiveOn(habits, dayKey)
-  if (activeHabits.length === 0) return 0
+  const dueHabits = dueHabitsOn(habits, dayKey)
+  if (dueHabits.length === 0) return 0
   const log = dailyLogs[dayKey] || {}
-  const completed = activeHabits.filter((h) => log[h.id]).length
-  return completed / activeHabits.length
+  const completed = dueHabits.filter((h) => log[h.id]).length
+  return completed / dueHabits.length
 }
 
 export function calcMomentum(dailyLogs, habits, endKey) {
@@ -30,9 +38,9 @@ export function calcMomentum(dailyLogs, habits, endKey) {
   let completed = 0
 
   for (const day of days) {
-    const activeHabits = habitsActiveOn(habits, day)
+    const dueHabits = dueHabitsOn(habits, day)
     const log = dailyLogs[day]
-    for (const habit of activeHabits) {
+    for (const habit of dueHabits) {
       possible += 1
       if (log && log[habit.id]) completed += 1
     }
@@ -84,14 +92,15 @@ export function calculateBestStreak(dailyLogs, habits, todayKey) {
 }
 
 export function calcHabitStreak(dailyLogs, habit, todayKey) {
-  const doneOn = (day) =>
-    Boolean(dailyLogs[day]?.[habit.id]) && (!habit.createdAt || habit.createdAt <= day)
+  const wasCreated = (day) => !habit.createdAt || habit.createdAt <= day
+  const doneOn = (day) => Boolean(dailyLogs[day]?.[habit.id])
+  const satisfiedOn = (day) => wasCreated(day) && (doneOn(day) || !isHabitDueOn(habit, day))
 
-  const todayDone = doneOn(todayKey)
+  const todayDone = wasCreated(todayKey) && doneOn(todayKey)
   let streak = 0
   let cursor = todayDone ? todayKey : addDays(todayKey, -1)
-  while (doneOn(cursor)) {
-    streak += 1
+  while (satisfiedOn(cursor)) {
+    if (doneOn(cursor)) streak += 1
     cursor = addDays(cursor, -1)
   }
   return { streak, todayDone }

@@ -36,6 +36,7 @@ export function loadData() {
     }
 
     merged.outings = merged.outings.map(migrateOuting)
+    merged.habits = merged.habits.map((h) => (h.frequency ? h : { ...h, frequency: 'daily' }))
 
     return merged
   } catch {

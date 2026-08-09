@@ -1,9 +1,9 @@
 import { Check } from 'lucide-react'
 import HabitHeatmap from './HabitHeatmap'
 
-export default function HabitRow({ habit, checked, onToggle, dailyLogs, today, onOpenDetail }) {
+export default function HabitRow({ habit, checked, due = true, onToggle, dailyLogs, today, onOpenDetail }) {
   return (
-    <div className="mb-2 rounded-2xl p-3" style={{ background: 'var(--surface)' }}>
+    <div className="mb-2 rounded-2xl p-3" style={{ background: 'var(--surface)', opacity: due ? 1 : 0.55 }}>
       <div className="flex items-center justify-between gap-2">
         <button
           onClick={() => onOpenDetail(habit)}
@@ -21,10 +21,19 @@ export default function HabitRow({ habit, checked, onToggle, dailyLogs, today, o
           >
             {habit.label}
           </span>
+          {!due && (
+            <span
+              className="flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
+              style={{ background: 'var(--surface-soft)', color: 'var(--text-3)' }}
+            >
+              오늘 쉬는 날
+            </span>
+          )}
         </button>
         <button
-          onClick={() => onToggle(habit.id)}
-          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl border transition-colors"
+          onClick={() => due && onToggle(habit.id)}
+          disabled={!due}
+          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl border transition-colors disabled:cursor-not-allowed"
           style={{
             borderColor: checked ? 'var(--color-accent)' : 'var(--border)',
             background: checked ? 'var(--color-accent)' : 'transparent',

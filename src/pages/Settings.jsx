@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Trash2, Moon, Sun, Plus, X, ChevronUp, ChevronDown, Pencil, ChevronRight, ChevronLeft, User, Palette, ListChecks, Database } from 'lucide-react'
 import Modal from '../components/Modal'
 import PageHeader from '../components/PageHeader'
-import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP } from '../utils/constants'
+import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP, HABIT_FREQUENCIES } from '../utils/constants'
 import { todayKey, formatShortDate } from '../utils/date'
 import { getNextOuting } from '../utils/outings'
 import { useBackClose } from '../utils/useBackClose'
@@ -223,11 +223,13 @@ function HabitsView({ data, update, activeHabits }) {
   const [editingId, setEditingId] = useState(null)
   const [formLabel, setFormLabel] = useState('')
   const [formEmoji, setFormEmoji] = useState(HABIT_EMOJI_CHOICES[0])
+  const [formFrequency, setFormFrequency] = useState('daily')
 
   function openAddForm() {
     setEditingId(null)
     setFormLabel('')
     setFormEmoji(HABIT_EMOJI_CHOICES[0])
+    setFormFrequency('daily')
     setFormOpen(true)
   }
 
@@ -235,6 +237,7 @@ function HabitsView({ data, update, activeHabits }) {
     setEditingId(habit.id)
     setFormLabel(habit.label)
     setFormEmoji(habit.emoji)
+    setFormFrequency(habit.frequency ?? 'daily')
     setFormOpen(true)
   }
 
@@ -245,7 +248,9 @@ function HabitsView({ data, update, activeHabits }) {
     if (editingId) {
       update((prev) => ({
         ...prev,
-        habits: prev.habits.map((h) => (h.id === editingId ? { ...h, label, emoji: formEmoji } : h)),
+        habits: prev.habits.map((h) =>
+          h.id === editingId ? { ...h, label, emoji: formEmoji, frequency: formFrequency } : h
+        ),
       }))
     } else {
       const maxOrder = activeHabits.reduce((max, h) => Math.max(max, h.order ?? 0), -1)
@@ -253,6 +258,7 @@ function HabitsView({ data, update, activeHabits }) {
         id: `custom-${Date.now()}`,
         label,
         emoji: formEmoji,
+        frequency: formFrequency,
         group: CUSTOM_HABIT_GROUP,
         order: maxOrder + 1,
         active: true,
@@ -325,6 +331,12 @@ function HabitsView({ data, update, activeHabits }) {
             >
               <span>{h.emoji}</span>
               {h.label}
+              <span
+                className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                style={{ background: 'var(--surface)', color: 'var(--text-3)' }}
+              >
+                {h.frequency === 'everyOther' ? '격일' : '매일'}
+              </span>
               <Pencil size={12} style={{ color: 'var(--text-4)' }} />
             </button>
             <button onClick={() => setDeleteTarget(h.id)} className="p-2" style={{ color: 'var(--text-4)' }}>
@@ -366,6 +378,25 @@ function HabitsView({ data, update, activeHabits }) {
               }}
             >
               {emoji}
+            </button>
+          ))}
+        </div>
+        <div className="mt-3 flex gap-2">
+          {HABIT_FREQUENCIES.map((freq) => (
+            <button
+              key={freq.id}
+              onClick={() => setFormFrequency(freq.id)}
+              className="flex-1 rounded-2xl border py-3 text-sm font-medium"
+              style={{
+                borderColor: formFrequency === freq.id ? 'var(--color-accent)' : 'var(--border)',
+                background:
+                  formFrequency === freq.id
+                    ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)'
+                    : 'var(--surface-soft)',
+                color: formFrequency === freq.id ? 'var(--color-accent)' : 'var(--text-2)',
+              }}
+            >
+              {freq.label}
             </button>
           ))}
         </div>

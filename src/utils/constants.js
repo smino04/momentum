@@ -2,14 +2,19 @@ export const APP_NAME = '말출'
 export const APP_TAGLINE = '다음 휴가까지, 더 나은 나.'
 
 export const DEFAULT_HABITS = [
-  { id: 'skin', label: '피부관리', emoji: '🧴', group: '피부', order: 0 },
-  { id: 'workout', label: '운동', emoji: '🏋️', group: '신체', order: 1 },
-  { id: 'cardio', label: '유산소', emoji: '🏃', group: '신체', order: 2 },
-  { id: 'diet', label: '식단', emoji: '🥗', group: '신체', order: 3 },
-  { id: 'no_snack', label: '군것질 X', emoji: '🚫', group: '신체', order: 4 },
-  { id: 'sleep', label: '수면', emoji: '😴', group: '라이프스타일', order: 5 },
-  { id: 'posture', label: '자세', emoji: '🧍', group: '라이프스타일', order: 6 },
-  { id: 'grooming', label: '그루밍', emoji: '✂️', group: '그루밍', order: 7 },
+  { id: 'skin', label: '피부관리', emoji: '🧴', group: '피부', order: 0, frequency: 'daily' },
+  { id: 'workout', label: '운동', emoji: '🏋️', group: '신체', order: 1, frequency: 'daily' },
+  { id: 'cardio', label: '유산소', emoji: '🏃', group: '신체', order: 2, frequency: 'everyOther' },
+  { id: 'diet', label: '식단', emoji: '🥗', group: '신체', order: 3, frequency: 'daily' },
+  { id: 'no_snack', label: '군것질 X', emoji: '🚫', group: '신체', order: 4, frequency: 'daily' },
+  { id: 'sleep', label: '수면', emoji: '😴', group: '라이프스타일', order: 5, frequency: 'daily' },
+  { id: 'posture', label: '자세', emoji: '🧍', group: '라이프스타일', order: 6, frequency: 'daily' },
+  { id: 'grooming', label: '그루밍', emoji: '✂️', group: '그루밍', order: 7, frequency: 'everyOther' },
+]
+
+export const HABIT_FREQUENCIES = [
+  { id: 'daily', label: '매일' },
+  { id: 'everyOther', label: '격일' },
 ]
 
 export const RECOVERY_ITEMS = [

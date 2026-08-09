@@ -1,4 +1,5 @@
 import HabitRow from './HabitRow'
+import { isHabitDueOn } from '../utils/momentum'
 
 export default function HabitList({ habits, log, onToggle, dailyLogs, today, onOpenDetail }) {
   const active = habits
@@ -20,6 +21,7 @@ export default function HabitList({ habits, log, onToggle, dailyLogs, today, onO
           key={habit.id}
           habit={habit}
           checked={Boolean(log?.[habit.id])}
+          due={isHabitDueOn(habit, today)}
           onToggle={onToggle}
           dailyLogs={dailyLogs}
           today={today}

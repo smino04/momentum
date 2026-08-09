@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Pencil, Trash2, ChevronLeft, ChevronRight, Flame, CheckCircle2 } from 'lucide-react'
 import HabitHeatmap from './HabitHeatmap'
-import { HABIT_EMOJI_CHOICES } from '../utils/constants'
+import { HABIT_EMOJI_CHOICES, HABIT_FREQUENCIES } from '../utils/constants'
 import { todayKey, daysInMonth, firstWeekdayMonIndex, dateKeyFor } from '../utils/date'
 import { calcHabitStreak, calcHabitTotalCompletions } from '../utils/momentum'
 import { useBackClose } from '../utils/useBackClose'
@@ -17,6 +17,7 @@ export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, on
   const [editing, setEditing] = useState(false)
   const [label, setLabel] = useState(habit?.label ?? '')
   const [emoji, setEmoji] = useState(habit?.emoji ?? HABIT_EMOJI_CHOICES[0])
+  const [frequency, setFrequency] = useState(habit?.frequency ?? 'daily')
   const [deleteConfirm, setDeleteConfirm] = useState(false)
 
   if (!habit) return null
@@ -48,7 +49,7 @@ export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, on
   function saveEdit() {
     const trimmed = label.trim()
     if (!trimmed) return
-    onSave({ label: trimmed, emoji })
+    onSave({ label: trimmed, emoji, frequency })
     setEditing(false)
   }
 
@@ -143,6 +144,25 @@ export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, on
                   }}
                 >
                   {e}
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 flex gap-2">
+              {HABIT_FREQUENCIES.map((freq) => (
+                <button
+                  key={freq.id}
+                  onClick={() => setFrequency(freq.id)}
+                  className="flex-1 rounded-2xl border py-2.5 text-sm font-medium"
+                  style={{
+                    borderColor: frequency === freq.id ? 'var(--color-accent)' : 'var(--border)',
+                    background:
+                      frequency === freq.id
+                        ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)'
+                        : 'transparent',
+                    color: frequency === freq.id ? 'var(--color-accent)' : 'var(--text-2)',
+                  }}
+                >
+                  {freq.label}
                 </button>
               ))}
             </div>
