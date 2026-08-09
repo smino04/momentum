@@ -50,7 +50,7 @@ export default function App() {
   return (
     <>
       <Splash />
-      <div className="mx-auto min-h-screen max-w-md">
+      <div className="mx-auto min-h-dvh max-w-md">
         <div key={pageKey} className="page-transition">
           {tab === 'home' && <Home data={data} update={update} onRefresh={refresh} />}
           {tab === 'progress' && <Progress data={data} update={update} onRefresh={refresh} />}

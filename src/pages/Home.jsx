@@ -167,7 +167,7 @@ function LeaveDayView({ data, today, outingType }) {
 
   return (
     <div
-      className="flex min-h-screen flex-col justify-center px-6 pb-24 text-center"
+      className="flex min-h-dvh flex-col justify-center px-6 pb-24 text-center"
       style={{ paddingTop: 'max(2rem, calc(env(safe-area-inset-top) + 0.75rem))' }}
     >
       <p className="text-xs font-medium tracking-widest text-accent">🎉 {outingType}일</p>
