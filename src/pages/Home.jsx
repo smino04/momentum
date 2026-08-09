@@ -5,6 +5,7 @@ import MomentumCard from '../components/MomentumCard'
 import RecoveryCard from '../components/RecoveryCard'
 import StreakBadge from '../components/StreakBadge'
 import CelebrationModal from '../components/CelebrationModal'
+import HabitDetailModal from '../components/HabitDetailModal'
 import { todayKey, formatMonthDay, leaveDDay, addDays } from '../utils/date'
 import { calcMomentum, todayCompletionRate, calculateCurrentStreak } from '../utils/momentum'
 import { STREAK_MILESTONE_MESSAGES } from '../utils/constants'
@@ -32,6 +33,8 @@ export default function Home({ data, update }) {
   const showRecovery = completion <= 0.4
 
   const [celebration, setCelebration] = useState({ open: false })
+  const [detailHabitId, setDetailHabitId] = useState(null)
+  const detailHabit = data.habits.find((h) => h.id === detailHabitId) || null
   const prevTodayDoneRef = useRef(todayDone)
   const lossCheckedRef = useRef(false)
 
@@ -63,6 +66,21 @@ export default function Home({ data, update }) {
       dayLog[habitId] = !dayLog[habitId]
       return { ...prev, dailyLogs: { ...prev.dailyLogs, [today]: dayLog } }
     })
+  }
+
+  function saveHabitEdit(fields) {
+    update((prev) => ({
+      ...prev,
+      habits: prev.habits.map((h) => (h.id === detailHabitId ? { ...h, ...fields } : h)),
+    }))
+  }
+
+  function deleteHabitFromDetail() {
+    update((prev) => ({
+      ...prev,
+      habits: prev.habits.map((h) => (h.id === detailHabitId ? { ...h, active: false } : h)),
+    }))
+    setDetailHabitId(null)
   }
 
   function toggleRecovery(itemId) {
@@ -97,6 +115,7 @@ export default function Home({ data, update }) {
           onToggle={toggleHabit}
           dailyLogs={data.dailyLogs}
           today={today}
+          onOpenDetail={(habit) => setDetailHabitId(habit.id)}
         />
       </div>
 
@@ -113,6 +132,16 @@ export default function Home({ data, update }) {
         streak={celebration.streak}
         milestoneMessage={celebration.milestoneMessage}
       />
+
+      {detailHabit && (
+        <HabitDetailModal
+          habit={detailHabit}
+          dailyLogs={data.dailyLogs}
+          onClose={() => setDetailHabitId(null)}
+          onSave={saveHabitEdit}
+          onDelete={deleteHabitFromDetail}
+        />
+      )}
     </div>
   )
 }

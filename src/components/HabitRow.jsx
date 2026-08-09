@@ -1,11 +1,14 @@
 import { Check } from 'lucide-react'
 import HabitHeatmap from './HabitHeatmap'
 
-export default function HabitRow({ habit, checked, onToggle, dailyLogs, today }) {
+export default function HabitRow({ habit, checked, onToggle, dailyLogs, today, onOpenDetail }) {
   return (
     <div className="mb-3 rounded-[20px] p-4" style={{ background: 'var(--surface)' }}>
       <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+        <button
+          onClick={() => onOpenDetail(habit)}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
+        >
           <div
             className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl text-xl"
             style={{ background: 'var(--surface-soft)' }}
@@ -18,7 +21,7 @@ export default function HabitRow({ habit, checked, onToggle, dailyLogs, today })
           >
             {habit.label}
           </span>
-        </div>
+        </button>
         <button
           onClick={() => onToggle(habit.id)}
           className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border transition-colors"

@@ -83,6 +83,28 @@ export function calculateBestStreak(dailyLogs, habits, todayKey) {
   return best
 }
 
+export function calcHabitStreak(dailyLogs, habit, todayKey) {
+  const doneOn = (day) =>
+    Boolean(dailyLogs[day]?.[habit.id]) && (!habit.createdAt || habit.createdAt <= day)
+
+  const todayDone = doneOn(todayKey)
+  let streak = 0
+  let cursor = todayDone ? todayKey : addDays(todayKey, -1)
+  while (doneOn(cursor)) {
+    streak += 1
+    cursor = addDays(cursor, -1)
+  }
+  return { streak, todayDone }
+}
+
+export function calcHabitTotalCompletions(dailyLogs, habitId) {
+  let count = 0
+  for (const day of Object.keys(dailyLogs)) {
+    if (dailyLogs[day]?.[habitId]) count += 1
+  }
+  return count
+}
+
 export function calcLifetimeCompletion(dailyLogs, habits, todayKey) {
   const start = firstLogDate(dailyLogs)
   if (!start) return { rate: 0, successDays: 0, totalDays: 0 }

@@ -38,6 +38,23 @@ export function lastNDays(n, endKey = todayKey()) {
   return keys
 }
 
+export function pad2(n) {
+  return String(n).padStart(2, '0')
+}
+
+export function daysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate()
+}
+
+export function firstWeekdayMonIndex(year, month) {
+  const jsDay = new Date(year, month, 1).getDay()
+  return (jsDay + 6) % 7
+}
+
+export function dateKeyFor(year, month, day) {
+  return `${year}-${pad2(month + 1)}-${pad2(day)}`
+}
+
 export function leaveDDay(leaveDate, today = todayKey()) {
   if (!leaveDate) return null
   const diff = daysBetween(today, leaveDate)

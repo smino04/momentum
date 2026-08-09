@@ -1,6 +1,6 @@
 import HabitRow from './HabitRow'
 
-export default function HabitList({ habits, log, onToggle, dailyLogs, today }) {
+export default function HabitList({ habits, log, onToggle, dailyLogs, today, onOpenDetail }) {
   const active = habits
     .filter((h) => h.active !== false)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
@@ -23,6 +23,7 @@ export default function HabitList({ habits, log, onToggle, dailyLogs, today }) {
           onToggle={onToggle}
           dailyLogs={dailyLogs}
           today={today}
+          onOpenDetail={onOpenDetail}
         />
       ))}
     </div>
