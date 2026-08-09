@@ -1,14 +1,11 @@
 import { lastNDays } from '../utils/date'
 
-const DAYS = 91
-const COLUMNS = 13
-
-export default function HabitHeatmap({ dailyLogs, habitId, endKey }) {
-  const days = lastNDays(DAYS, endKey)
+export default function HabitHeatmap({ dailyLogs, habitId, endKey, days = 91, columns = 13 }) {
+  const dayKeys = lastNDays(days, endKey)
 
   return (
-    <div className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${COLUMNS}, minmax(0, 1fr))` }}>
-      {days.map((d) => {
+    <div className="grid gap-[2px]" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+      {dayKeys.map((d) => {
         const done = Boolean(dailyLogs[d]?.[habitId])
         return (
           <div
