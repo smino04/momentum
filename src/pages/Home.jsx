@@ -91,7 +91,13 @@ export default function Home({ data, update }) {
         <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
           ☀️ 오늘 · {formatMonthDay(today)}
         </p>
-        <HabitList habits={data.habits} log={log} onToggle={toggleHabit} />
+        <HabitList
+          habits={data.habits}
+          log={log}
+          onToggle={toggleHabit}
+          dailyLogs={data.dailyLogs}
+          today={today}
+        />
       </div>
 
       {showRecovery && <RecoveryCard recoveryLog={recoveryLog} onToggle={toggleRecovery} />}

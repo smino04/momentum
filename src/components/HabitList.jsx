@@ -1,18 +1,9 @@
 import HabitRow from './HabitRow'
 
-export default function HabitList({ habits, log, onToggle }) {
+export default function HabitList({ habits, log, onToggle, dailyLogs, today }) {
   const active = habits
     .filter((h) => h.active !== false)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-  const groups = []
-  for (const h of active) {
-    let group = groups.find((g) => g.name === h.group)
-    if (!group) {
-      group = { name: h.group, items: [] }
-      groups.push(group)
-    }
-    group.items.push(h)
-  }
 
   if (active.length === 0) {
     return (
@@ -23,24 +14,16 @@ export default function HabitList({ habits, log, onToggle }) {
   }
 
   return (
-    <div>
-      {groups.map((group) => (
-        <div key={group.name} className="mb-2">
-          <p
-            className="pb-1 pt-4 text-[11px] font-semibold tracking-widest"
-            style={{ color: 'var(--text-4)' }}
-          >
-            {group.name}
-          </p>
-          {group.items.map((habit) => (
-            <HabitRow
-              key={habit.id}
-              habit={habit}
-              checked={Boolean(log?.[habit.id])}
-              onToggle={onToggle}
-            />
-          ))}
-        </div>
+    <div className="mt-4">
+      {active.map((habit) => (
+        <HabitRow
+          key={habit.id}
+          habit={habit}
+          checked={Boolean(log?.[habit.id])}
+          onToggle={onToggle}
+          dailyLogs={dailyLogs}
+          today={today}
+        />
       ))}
     </div>
   )
