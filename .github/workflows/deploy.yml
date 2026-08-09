@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - claude/military-looksmaxing-mvp-8ygo0n
   workflow_dispatch:
 
 permissions:
