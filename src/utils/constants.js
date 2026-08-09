@@ -1,8 +1,6 @@
 export const APP_NAME = '말출'
 export const APP_TAGLINE = '다음 휴가까지, 더 나은 나.'
 
-export const CURRENT_TAB_KEY = 'moment_current_tab'
-
 export const DEFAULT_HABITS = [
   { id: 'skin', label: '피부관리', emoji: '🧴', group: '피부', order: 0 },
   { id: 'workout', label: '운동', emoji: '🏋️', group: '신체', order: 1 },

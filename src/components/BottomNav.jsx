@@ -1,5 +1,4 @@
 import { Home, TrendingUp, CalendarDays, Settings } from 'lucide-react'
-import { CURRENT_TAB_KEY } from '../utils/constants'
 
 const TABS = [
   { id: 'home', label: '홈', icon: Home },
@@ -8,12 +7,7 @@ const TABS = [
   { id: 'settings', label: '설정', icon: Settings },
 ]
 
-export default function BottomNav({ active }) {
-  function goTo(tabId) {
-    localStorage.setItem(CURRENT_TAB_KEY, tabId)
-    window.location.reload()
-  }
-
+export default function BottomNav({ active, onChange }) {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-xl"
@@ -30,7 +24,7 @@ export default function BottomNav({ active }) {
           return (
             <button
               key={tab.id}
-              onClick={() => goTo(tab.id)}
+              onClick={() => onChange(tab.id)}
               className="flex flex-1 flex-col items-center gap-1 py-3 active:opacity-60"
             >
               <Icon
