@@ -1,4 +1,4 @@
-export const APP_NAME = 'MOMENT'
+export const APP_NAME = '말출'
 export const APP_TAGLINE = '다음 휴가까지, 더 나은 나.'
 
 export const DEFAULT_HABITS = [

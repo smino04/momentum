@@ -1,6 +1,6 @@
 {
-  "name": "MOMENT",
-  "short_name": "MOMENT",
+  "name": "말출",
+  "short_name": "말출",
   "description": "군인을 위한 자기관리 트래커",
   "start_url": "./",
   "scope": "./",
