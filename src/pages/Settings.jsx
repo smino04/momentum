@@ -96,7 +96,7 @@ export default function Settings({ data, update, onReset }) {
   }
 
   return (
-    <div className="px-6 pb-28 pt-8">
+    <div className="page-shell">
       <PageHeader title="설정" />
       <p className="mt-3 text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
         {APP_NAME}

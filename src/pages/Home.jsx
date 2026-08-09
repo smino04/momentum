@@ -99,7 +99,7 @@ export default function Home({ data, update }) {
   }
 
   return (
-    <div className="px-6 pb-28 pt-8">
+    <div className="page-shell">
       <PageHeader title="홈" />
 
       <div className="mt-6">
@@ -164,7 +164,10 @@ function LeaveDayView({ data, today }) {
   const lastPhoto = [...data.photos].sort((a, b) => b.date.localeCompare(a.date))[0]
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-6 pb-24 text-center">
+    <div
+      className="flex min-h-screen flex-col justify-center px-6 pb-24 text-center"
+      style={{ paddingTop: 'max(2rem, calc(env(safe-area-inset-top) + 0.75rem))' }}
+    >
       <p className="text-xs font-medium tracking-widest text-accent">🎉 휴가일</p>
       <p className="mt-2 text-4xl font-bold" style={{ color: 'var(--text)' }}>
         오늘입니다.

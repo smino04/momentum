@@ -78,7 +78,7 @@ export default function Progress({ data, update }) {
   )
 
   return (
-    <div className="px-6 pb-28 pt-8">
+    <div className="page-shell">
       <PageHeader title="진행상황" />
 
       <div className="mt-6 grid grid-cols-2 gap-2">

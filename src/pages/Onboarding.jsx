@@ -26,7 +26,10 @@ export default function Onboarding({ onComplete }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col justify-between px-6 py-10">
+    <div
+      className="flex min-h-screen flex-col justify-between px-6 pb-10"
+      style={{ paddingTop: 'max(2.5rem, calc(env(safe-area-inset-top) + 1rem))' }}
+    >
       <div>
         <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
           {APP_NAME}
