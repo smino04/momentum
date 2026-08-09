@@ -182,11 +182,26 @@ body {
   animation: confetti-burst 720ms cubic-bezier(0.25, 0.8, 0.5, 1) forwards;
 }
 
+@keyframes reduced-flash {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  /* Vestibular-safe: drop transform/scale motion but keep a brief opacity
+     cue, otherwise refresh/tap feedback becomes silently invisible. */
   .page-transition,
   .animate-fade-in,
+  .animate-tap-pulse {
+    animation: reduced-flash 180ms ease-out !important;
+    transform: none !important;
+  }
+
   .animate-check,
-  .animate-tap-pulse,
   .confetti-piece {
     animation: none !important;
   }
