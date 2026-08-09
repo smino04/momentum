@@ -28,6 +28,19 @@ export const CUSTOM_HABIT_GROUP = '기타'
 
 export const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100]
 
+export const CONDITION_FIELDS = [
+  { id: 'skin', label: '피부 컨디션' },
+  { id: 'body', label: '몸 상태' },
+]
+
+export const CONDITION_SCALE = [
+  { value: 1, emoji: '😞' },
+  { value: 2, emoji: '😕' },
+  { value: 3, emoji: '😐' },
+  { value: 4, emoji: '🙂' },
+  { value: 5, emoji: '😄' },
+]
+
 export const STREAK_MILESTONE_MESSAGES = {
   3: '3일을 만들었습니다.',
   7: '일주일을 만들었습니다.',

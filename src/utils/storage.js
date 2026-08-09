@@ -10,6 +10,7 @@ const DEFAULT_DATA = {
   habits: DEFAULT_HABITS,
   dailyLogs: {},
   weightLogs: [],
+  conditionLogs: [],
   photos: [],
   lastSeenStreak: 0,
 }

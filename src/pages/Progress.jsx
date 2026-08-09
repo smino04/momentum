@@ -1,15 +1,19 @@
 import { useMemo, useState } from 'react'
 import { Plus } from 'lucide-react'
 import WeightChart from '../components/WeightChart'
+import ConditionChart from '../components/ConditionChart'
+import ConditionModal from '../components/ConditionModal'
 import PhotoJournal from '../components/PhotoJournal'
 import Modal from '../components/Modal'
 import { todayKey, addDays, daysBetween } from '../utils/date'
 import { calcMomentum, calcLifetimeCompletion, calculateCurrentStreak, calculateBestStreak } from '../utils/momentum'
+import { CONDITION_FIELDS, CONDITION_SCALE } from '../utils/constants'
 
 export default function Progress({ data, update }) {
   const today = todayKey()
   const [weightModalOpen, setWeightModalOpen] = useState(false)
   const [weightInput, setWeightInput] = useState('')
+  const [conditionModalOpen, setConditionModalOpen] = useState(false)
 
   const momentum = useMemo(() => calcMomentum(data.dailyLogs, data.habits, today), [data.dailyLogs, data.habits])
   const { streak } = useMemo(
@@ -49,6 +53,16 @@ export default function Progress({ data, update }) {
 
   function addPhoto(photo) {
     update((prev) => ({ ...prev, photos: [...prev.photos, photo] }))
+  }
+
+  const sortedConditions = [...data.conditionLogs].sort((a, b) => a.date.localeCompare(b.date))
+  const todayCondition = sortedConditions.find((c) => c.date === today)
+
+  function saveCondition(values) {
+    update((prev) => {
+      const others = prev.conditionLogs.filter((c) => c.date !== today)
+      return { ...prev, conditionLogs: [...others, { date: today, ...values }] }
+    })
   }
 
   return (
@@ -123,6 +137,41 @@ export default function Progress({ data, update }) {
         </div>
       </div>
 
+      <div className="mt-8">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+            🌤️ 컨디션
+          </p>
+          <button
+            onClick={() => setConditionModalOpen(true)}
+            className="flex items-center gap-1 text-xs text-accent"
+          >
+            <Plus size={14} /> 컨디션 기록
+          </button>
+        </div>
+        <p className="mt-1 text-[11px]" style={{ color: 'var(--text-4)' }}>
+          습관을 다 지켜도 컨디션은 다를 수 있어요. 따로 남겨보세요.
+        </p>
+
+        <div className="mt-3 flex flex-col gap-3">
+          {CONDITION_FIELDS.map((field) => {
+            const value = todayCondition?.[field.id]
+            const emoji = CONDITION_SCALE.find((s) => s.value === value)?.emoji
+            return (
+              <div key={field.id}>
+                <div className="mb-1.5 flex items-center gap-2">
+                  <span className="text-lg">{emoji ?? '➖'}</span>
+                  <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>
+                    {field.label}
+                  </span>
+                </div>
+                <ConditionChart conditionLogs={data.conditionLogs} fieldId={field.id} endKey={today} />
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
       <div className="mt-10">
         <PhotoJournal photos={data.photos} onAdd={addPhoto} />
       </div>
@@ -149,6 +198,13 @@ export default function Progress({ data, update }) {
           저장
         </button>
       </Modal>
+
+      <ConditionModal
+        open={conditionModalOpen}
+        onClose={() => setConditionModalOpen(false)}
+        initial={todayCondition}
+        onSave={saveCondition}
+      />
     </div>
   )
 }
