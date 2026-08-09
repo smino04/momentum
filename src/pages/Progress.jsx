@@ -3,10 +3,12 @@ import { Plus } from 'lucide-react'
 import WeightChart from '../components/WeightChart'
 import ConditionChart from '../components/ConditionChart'
 import ConditionModal from '../components/ConditionModal'
+import ConditionInsightCard from '../components/ConditionInsightCard'
 import PhotoJournal from '../components/PhotoJournal'
 import Modal from '../components/Modal'
 import { todayKey, addDays, daysBetween } from '../utils/date'
 import { calcMomentum, calcLifetimeCompletion, calculateCurrentStreak, calculateBestStreak } from '../utils/momentum'
+import { calcConditionInsight } from '../utils/insights'
 import { CONDITION_FIELDS, CONDITION_SCALE } from '../utils/constants'
 
 export default function Progress({ data, update }) {
@@ -64,6 +66,15 @@ export default function Progress({ data, update }) {
       return { ...prev, conditionLogs: [...others, { date: today, ...values }] }
     })
   }
+
+  const insights = useMemo(
+    () =>
+      CONDITION_FIELDS.map((field) => ({
+        field,
+        insight: calcConditionInsight(data.dailyLogs, data.conditionLogs, data.habits, field.relatedGroup, field.id),
+      })).filter((x) => x.insight),
+    [data.dailyLogs, data.conditionLogs, data.habits]
+  )
 
   return (
     <div className="px-6 pb-28 pt-8">
@@ -171,6 +182,19 @@ export default function Progress({ data, update }) {
           })}
         </div>
       </div>
+
+      {insights.length > 0 && (
+        <div className="mt-6">
+          <p className="mb-3 text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
+            💡 인사이트
+          </p>
+          <div className="flex flex-col gap-3">
+            {insights.map(({ field, insight }) => (
+              <ConditionInsightCard key={field.id} field={field} insight={insight} />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-10">
         <PhotoJournal photos={data.photos} onAdd={addPhoto} />

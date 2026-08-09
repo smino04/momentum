@@ -29,8 +29,8 @@ export const CUSTOM_HABIT_GROUP = '기타'
 export const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100]
 
 export const CONDITION_FIELDS = [
-  { id: 'skin', label: '피부 컨디션' },
-  { id: 'body', label: '몸 상태' },
+  { id: 'skin', label: '피부 컨디션', emoji: '🧴', relatedGroup: '피부' },
+  { id: 'body', label: '몸 상태', emoji: '💪', relatedGroup: '신체' },
 ]
 
 export const CONDITION_SCALE = [
