@@ -4,7 +4,7 @@ import WeightChart from '../components/WeightChart'
 import PhotoJournal from '../components/PhotoJournal'
 import Modal from '../components/Modal'
 import { todayKey, addDays } from '../utils/date'
-import { calcMomentum, activeDaysCount } from '../utils/momentum'
+import { calcMomentum, activeDaysCount, calcStreak } from '../utils/momentum'
 
 export default function Progress({ data, update }) {
   const today = todayKey()
@@ -13,6 +13,7 @@ export default function Progress({ data, update }) {
 
   const momentum = useMemo(() => calcMomentum(data.dailyLogs, data.habits, today), [data.dailyLogs, data.habits])
   const activeDays = useMemo(() => activeDaysCount(data.dailyLogs, data.habits, today), [data.dailyLogs, data.habits])
+  const { streak } = useMemo(() => calcStreak(data.dailyLogs, data.habits, today), [data.dailyLogs, data.habits])
   const completionRate = Math.round(momentum)
 
   const sortedWeights = [...data.weightLogs].sort((a, b) => a.date.localeCompare(b.date))
@@ -45,8 +46,9 @@ export default function Progress({ data, update }) {
         📈 내 변화
       </p>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <StatBlock emoji="🔥" label="모멘텀" value={momentum} />
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <StatBlock emoji="🔥" label="연속 기록" value={`${streak}일`} />
+        <StatBlock emoji="⚡" label="모멘텀" value={momentum} />
         <StatBlock emoji="📅" label="관리일" value={`${activeDays}일`} />
         <StatBlock emoji="✅" label="완료율" value={`${completionRate}%`} />
       </div>

@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { Trash2, Moon, Sun } from 'lucide-react'
+import { Trash2, Moon, Sun, Plus, X } from 'lucide-react'
 import Modal from '../components/Modal'
-import { APP_NAME, APP_TAGLINE } from '../utils/constants'
+import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP } from '../utils/constants'
 
 export default function Settings({ data, update, onReset }) {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newLabel, setNewLabel] = useState('')
+  const [newEmoji, setNewEmoji] = useState(HABIT_EMOJI_CHOICES[0])
   const isLight = data.theme === 'light'
 
   function updateProfileField(field, value) {
@@ -20,6 +23,26 @@ export default function Settings({ data, update, onReset }) {
       ...prev,
       habits: prev.habits.map((h) => (h.id === id ? { ...h, enabled: !h.enabled } : h)),
     }))
+  }
+
+  function removeHabit(id) {
+    update((prev) => ({ ...prev, habits: prev.habits.filter((h) => h.id !== id) }))
+  }
+
+  function addHabit() {
+    const label = newLabel.trim()
+    if (!label) return
+    const habit = {
+      id: `custom-${Date.now()}`,
+      label,
+      emoji: newEmoji,
+      group: CUSTOM_HABIT_GROUP,
+      enabled: true,
+    }
+    update((prev) => ({ ...prev, habits: [...prev.habits, habit] }))
+    setNewLabel('')
+    setNewEmoji(HABIT_EMOJI_CHOICES[0])
+    setShowAddForm(false)
   }
 
   function setTheme(theme) {
@@ -101,9 +124,8 @@ export default function Settings({ data, update, onReset }) {
       <Section title="✅ 관리 항목">
         <div className="flex flex-col gap-2">
           {data.habits.map((h) => (
-            <button
+            <div
               key={h.id}
-              onClick={() => toggleHabit(h.id)}
               className="flex items-center justify-between rounded-2xl border px-4 py-3.5"
               style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
             >
@@ -111,19 +133,83 @@ export default function Settings({ data, update, onReset }) {
                 <span>{h.emoji}</span>
                 {h.label}
               </span>
-              <span
-                className="h-6 w-10 rounded-full p-0.5 transition-colors"
-                style={{ background: h.enabled ? 'var(--color-accent)' : 'var(--toggle-off)' }}
-              >
-                <span
-                  className={`block h-5 w-5 rounded-full bg-white transition-transform ${
-                    h.enabled ? 'translate-x-4' : 'translate-x-0'
-                  }`}
-                />
-              </span>
-            </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => toggleHabit(h.id)}
+                  className="h-6 w-10 rounded-full p-0.5 transition-colors"
+                  style={{ background: h.enabled ? 'var(--color-accent)' : 'var(--toggle-off)' }}
+                >
+                  <span
+                    className={`block h-5 w-5 rounded-full bg-white transition-transform ${
+                      h.enabled ? 'translate-x-4' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <button onClick={() => removeHabit(h.id)} style={{ color: 'var(--text-4)' }}>
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
           ))}
         </div>
+
+        {showAddForm ? (
+          <div
+            className="mt-3 rounded-2xl border p-4"
+            style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
+          >
+            <input
+              autoFocus
+              value={newLabel}
+              onChange={(e) => setNewLabel(e.target.value)}
+              placeholder="항목 이름 (예: 자기 전 독서)"
+              className="input-field"
+            />
+            <div className="mt-3 flex flex-wrap gap-2">
+              {HABIT_EMOJI_CHOICES.map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => setNewEmoji(emoji)}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border text-lg"
+                  style={{
+                    borderColor: newEmoji === emoji ? 'var(--color-accent)' : 'var(--border)',
+                    background:
+                      newEmoji === emoji
+                        ? 'color-mix(in srgb, var(--color-accent) 15%, transparent)'
+                        : 'transparent',
+                  }}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+            <div className="mt-4 flex gap-2">
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="flex-1 rounded-2xl border py-3 text-sm"
+                style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
+              >
+                취소
+              </button>
+              <button
+                onClick={addHabit}
+                disabled={!newLabel.trim()}
+                className="flex-1 rounded-2xl bg-accent py-3 text-sm font-semibold text-white disabled:opacity-30"
+              >
+                추가
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed py-3.5 text-sm"
+            style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
+          >
+            <Plus size={16} />
+            항목 추가
+          </button>
+        )}
       </Section>
 
       <Section title="데이터">

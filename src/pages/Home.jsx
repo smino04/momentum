@@ -3,8 +3,9 @@ import Countdown from '../components/Countdown'
 import HabitList from '../components/HabitList'
 import MomentumCard from '../components/MomentumCard'
 import RecoveryCard from '../components/RecoveryCard'
+import StreakBadge from '../components/StreakBadge'
 import { todayKey, formatMonthDay, leaveDDay, addDays } from '../utils/date'
-import { calcMomentum, todayCompletionRate } from '../utils/momentum'
+import { calcMomentum, todayCompletionRate, calcStreak } from '../utils/momentum'
 
 export default function Home({ data, update }) {
   const today = todayKey()
@@ -19,6 +20,11 @@ export default function Home({ data, update }) {
     [data.dailyLogs, data.habits]
   )
   const delta = momentum - momentumPrev
+
+  const { streak, todayDone } = useMemo(
+    () => calcStreak(data.dailyLogs, data.habits, today),
+    [data.dailyLogs, data.habits]
+  )
 
   const completion = todayCompletionRate(data.dailyLogs, data.habits, today)
   const showRecovery = completion <= 0.4
@@ -49,7 +55,11 @@ export default function Home({ data, update }) {
     <div className="px-6 pb-28 pt-8">
       <Countdown leaveDate={data.leaveDate} dday={dday} />
 
-      <div className="mt-10">
+      <div className="mt-6">
+        <StreakBadge streak={streak} todayDone={todayDone} />
+      </div>
+
+      <div className="mt-8">
         <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
           ☀️ 오늘 · {formatMonthDay(today)}
         </p>

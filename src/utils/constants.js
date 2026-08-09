@@ -16,3 +16,7 @@ export const RECOVERY_ITEMS = [
 ]
 
 export const ACCENT = '#FF7A45'
+
+export const HABIT_EMOJI_CHOICES = ['⭐', '🧴', '💪', '🏃', '🍽️', '✨', '💧', '📚', '😴', '🚭', '🦷', '🧘']
+
+export const CUSTOM_HABIT_GROUP = '기타'
