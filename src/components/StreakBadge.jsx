@@ -13,7 +13,7 @@ export default function StreakBadge({ streak, todayDone }) {
     >
       <div className="flex items-center gap-2">
         <span className={`text-xl ${streak > 0 ? '' : 'grayscale opacity-40'}`}>🔥</span>
-        <span className="text-lg font-bold" style={{ color: 'var(--text)' }}>
+        <span className="text-lg font-bold tabular-nums" style={{ color: 'var(--text)' }}>
           {streak}일 연속
         </span>
       </div>

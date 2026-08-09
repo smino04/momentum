@@ -1,4 +1,7 @@
+import { useBackClose } from '../utils/useBackClose'
+
 export default function Modal({ open, onClose, children, title }) {
+  useBackClose(open, onClose)
   if (!open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>

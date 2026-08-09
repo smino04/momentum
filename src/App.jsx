@@ -1,17 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import BottomNav from './components/BottomNav'
 import Splash from './components/Splash'
+import ToastHost from './components/ToastHost'
 import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
 import Progress from './pages/Progress'
 import Calendar from './pages/Calendar'
 import Settings from './pages/Settings'
 import { useAppData } from './utils/useAppData'
+import { installGlobalHaptics } from './utils/haptics'
 
 export default function App() {
   const { data, update, reset } = useAppData()
   const [tab, setTab] = useState('home')
   const [refreshTick, setRefreshTick] = useState(0)
+
+  useEffect(() => {
+    installGlobalHaptics()
+  }, [])
 
   function navigate(tabId) {
     setTab(tabId)
@@ -26,6 +32,7 @@ export default function App() {
     return (
       <>
         <Splash />
+        <ToastHost />
         <Onboarding
           onComplete={({ leaveDate, habits, profile, weightLogs }) => {
             update((prev) => ({
@@ -50,7 +57,8 @@ export default function App() {
   return (
     <>
       <Splash />
-      <div className="mx-auto min-h-dvh max-w-md">
+      <ToastHost />
+      <div className="mx-auto max-w-md app-shell">
         <div key={pageKey} className="page-transition">
           {tab === 'home' && <Home data={data} update={update} onRefresh={refresh} />}
           {tab === 'progress' && <Progress data={data} update={update} onRefresh={refresh} />}

@@ -4,10 +4,12 @@ import HabitHeatmap from './HabitHeatmap'
 import { HABIT_EMOJI_CHOICES } from '../utils/constants'
 import { todayKey, daysInMonth, firstWeekdayMonIndex, dateKeyFor } from '../utils/date'
 import { calcHabitStreak, calcHabitTotalCompletions } from '../utils/momentum'
+import { useBackClose } from '../utils/useBackClose'
 
 const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
 
 export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, onDelete }) {
+  useBackClose(Boolean(habit), onClose)
   const today = todayKey()
   const now = new Date()
   const [viewYear, setViewYear] = useState(now.getFullYear())
@@ -89,14 +91,14 @@ export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, on
 
         <div className="mt-4 flex items-center gap-2">
           <span
-            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium"
+            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium tabular-nums"
             style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
           >
             <Flame size={14} className="text-accent" />
             {streak}일 연속
           </span>
           <span
-            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium"
+            className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium tabular-nums"
             style={{ borderColor: 'var(--border)', color: 'var(--text-2)' }}
           >
             <CheckCircle2 size={14} className="text-accent" />

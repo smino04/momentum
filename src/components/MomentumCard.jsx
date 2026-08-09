@@ -10,7 +10,7 @@ export default function MomentumCard({ momentum, delta }) {
         모멘텀
       </p>
       <div className="mt-2 flex items-end justify-between">
-        <p className="text-5xl font-bold leading-none" style={{ color: 'var(--text)' }}>
+        <p className="text-5xl font-bold leading-none tabular-nums" style={{ color: 'var(--text)' }}>
           {momentum} <span className="text-3xl align-middle">{trendEmoji}</span>
         </p>
         <div className="pb-1 text-right">

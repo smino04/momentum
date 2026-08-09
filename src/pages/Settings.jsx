@@ -5,9 +5,12 @@ import PageHeader from '../components/PageHeader'
 import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP } from '../utils/constants'
 import { todayKey, formatShortDate } from '../utils/date'
 import { getNextOuting } from '../utils/outings'
+import { useBackClose } from '../utils/useBackClose'
+import { showToast } from '../utils/toast'
 
 export default function Settings({ data, update, onReset, onNavigate, onRefresh }) {
   const [view, setView] = useState('root')
+  useBackClose(view !== 'root', () => setView('root'))
   const isLight = data.theme === 'light'
   const nextOuting = getNextOuting(data.outings, todayKey())
 
@@ -256,6 +259,7 @@ function HabitsView({ data, update, activeHabits }) {
         createdAt: todayKey(),
       }
       update((prev) => ({ ...prev, habits: [...prev.habits, habit] }))
+      showToast('관리항목을 추가했어요')
     }
     setFormOpen(false)
   }
@@ -266,6 +270,7 @@ function HabitsView({ data, update, activeHabits }) {
       habits: prev.habits.map((h) => (h.id === deleteTarget ? { ...h, active: false } : h)),
     }))
     setDeleteTarget(null)
+    showToast('관리항목을 삭제했어요')
   }
 
   function moveHabit(id, direction) {
@@ -432,6 +437,7 @@ function DataView({ onReset }) {
             onClick={() => {
               setConfirmOpen(false)
               onReset()
+              showToast('모든 데이터를 초기화했어요')
             }}
             className="flex-1 rounded-2xl bg-red-500 py-4 font-semibold text-white"
           >

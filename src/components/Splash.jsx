@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 
+const SHOWN_KEY = 'moment-splash-shown'
+const alreadyShownThisSession = sessionStorage.getItem(SHOWN_KEY) === '1'
+
 export default function Splash() {
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(!alreadyShownThisSession)
   const [fading, setFading] = useState(false)
 
   useEffect(() => {
+    if (alreadyShownThisSession) return
+    sessionStorage.setItem(SHOWN_KEY, '1')
     const fadeTimer = setTimeout(() => setFading(true), 700)
     const hideTimer = setTimeout(() => setVisible(false), 1000)
     return () => {

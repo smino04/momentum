@@ -35,7 +35,7 @@ export default function Countdown({ date, dday, label = '휴가' }) {
       <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
         🌅 다음 {label}
       </p>
-      <p className="mt-2 text-[64px] font-bold leading-none tracking-tight" style={{ color: 'var(--text)' }}>
+      <p className="mt-2 text-[64px] font-bold leading-none tracking-tight tabular-nums" style={{ color: 'var(--text)' }}>
         {dday.isToday ? '디데이' : `D-${dday.diff}`}
       </p>
       <p className="mt-2 text-sm" style={{ color: 'var(--text-2)' }}>

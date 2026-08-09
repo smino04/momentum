@@ -10,6 +10,16 @@ createRoot(document.getElementById('root')).render(
 )
 
 if ('serviceWorker' in navigator) {
+  const RELOAD_COUNT_KEY = 'moment-sw-reload-count'
+  const MAX_RELOADS = 3
+
+  function reloadOnceGuarded() {
+    const count = parseInt(sessionStorage.getItem(RELOAD_COUNT_KEY) || '0', 10)
+    if (count >= MAX_RELOADS) return
+    sessionStorage.setItem(RELOAD_COUNT_KEY, String(count + 1))
+    window.location.reload()
+  }
+
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register(`${import.meta.env.BASE_URL}sw.js`)
@@ -19,7 +29,7 @@ if ('serviceWorker' in navigator) {
           if (!installing) return
           installing.addEventListener('statechange', () => {
             if (installing.state === 'activated') {
-              window.location.reload()
+              reloadOnceGuarded()
             }
           })
         })
@@ -27,10 +37,5 @@ if ('serviceWorker' in navigator) {
       .catch(() => {})
   })
 
-  let reloadedOnce = false
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (reloadedOnce) return
-    reloadedOnce = true
-    window.location.reload()
-  })
+  navigator.serviceWorker.addEventListener('controllerchange', reloadOnceGuarded)
 }
