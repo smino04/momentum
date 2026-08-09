@@ -159,7 +159,7 @@ export default function Settings({ data, update, onReset, onNavigate }) {
           style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
         >
           <span className="text-sm" style={{ color: 'var(--text-2)' }}>
-            {nextOuting ? `다음 ${nextOuting.type} · ${formatShortDate(nextOuting.date)}` : '등록된 일정 없음'}
+            {nextOuting ? `다음 ${nextOuting.type} · ${formatShortDate(nextOuting.startDate)}` : '등록된 일정 없음'}
           </span>
           <span className="text-xs font-medium text-accent">캘린더에서 관리 →</span>
         </button>

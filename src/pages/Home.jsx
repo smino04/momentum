@@ -7,15 +7,15 @@ import StreakBadge from '../components/StreakBadge'
 import CelebrationModal from '../components/CelebrationModal'
 import HabitDetailModal from '../components/HabitDetailModal'
 import PageHeader from '../components/PageHeader'
-import { todayKey, formatMonthDay, leaveDDay, addDays } from '../utils/date'
+import { todayKey, formatMonthDay, addDays } from '../utils/date'
 import { calcMomentum, todayCompletionRate, calculateCurrentStreak } from '../utils/momentum'
-import { getNextOuting } from '../utils/outings'
+import { getNextOuting, outingDday } from '../utils/outings'
 import { STREAK_MILESTONE_MESSAGES } from '../utils/constants'
 
 export default function Home({ data, update }) {
   const today = todayKey()
   const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
-  const dday = leaveDDay(nextOuting?.date, today)
+  const dday = outingDday(nextOuting, today)
 
   const log = data.dailyLogs[today] || {}
   const recoveryLog = log.__recovery || {}
@@ -105,7 +105,7 @@ export default function Home({ data, update }) {
       <PageHeader title="홈" />
 
       <div className="mt-6">
-        <Countdown date={nextOuting?.date} dday={dday} label={nextOuting?.type ?? '휴가'} />
+        <Countdown date={nextOuting?.startDate} dday={dday} label={nextOuting?.type ?? '휴가'} />
       </div>
 
       <div className="mt-6">

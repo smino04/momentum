@@ -19,7 +19,9 @@ export default function App() {
             ...prev,
             onboarded: true,
             leaveDate,
-            outings: leaveDate ? [{ id: `outing-${leaveDate}`, type: '휴가', date: leaveDate }] : [],
+            outings: leaveDate
+              ? [{ id: `outing-${leaveDate}`, type: '휴가', startDate: leaveDate, endDate: leaveDate }]
+              : [],
             habits,
             profile: { ...prev.profile, ...profile },
             weightLogs,

@@ -34,7 +34,7 @@ export default function Progress({ data, update }) {
   )
 
   const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
-  const dday = nextOuting ? daysBetween(today, nextOuting.date) : null
+  const dday = nextOuting ? Math.max(0, daysBetween(today, nextOuting.startDate)) : null
 
   const sortedWeights = [...data.weightLogs].sort((a, b) => a.date.localeCompare(b.date))
   const currentWeight = sortedWeights[sortedWeights.length - 1]?.weight
