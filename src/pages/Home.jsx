@@ -6,6 +6,7 @@ import RecoveryCard from '../components/RecoveryCard'
 import StreakBadge from '../components/StreakBadge'
 import CelebrationModal from '../components/CelebrationModal'
 import HabitDetailModal from '../components/HabitDetailModal'
+import PageHeader from '../components/PageHeader'
 import { todayKey, formatMonthDay, leaveDDay, addDays } from '../utils/date'
 import { calcMomentum, todayCompletionRate, calculateCurrentStreak } from '../utils/momentum'
 import { STREAK_MILESTONE_MESSAGES } from '../utils/constants'
@@ -99,7 +100,11 @@ export default function Home({ data, update }) {
 
   return (
     <div className="px-6 pb-28 pt-8">
-      <Countdown leaveDate={data.leaveDate} dday={dday} />
+      <PageHeader title="홈" />
+
+      <div className="mt-6">
+        <Countdown leaveDate={data.leaveDate} dday={dday} />
+      </div>
 
       <div className="mt-6">
         <StreakBadge streak={streak} todayDone={todayDone} />

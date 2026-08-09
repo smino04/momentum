@@ -6,6 +6,7 @@ import ConditionModal from '../components/ConditionModal'
 import ConditionInsightCard from '../components/ConditionInsightCard'
 import PhotoJournal from '../components/PhotoJournal'
 import Modal from '../components/Modal'
+import PageHeader from '../components/PageHeader'
 import { todayKey, addDays, daysBetween } from '../utils/date'
 import { calcMomentum, calcLifetimeCompletion, calculateCurrentStreak, calculateBestStreak } from '../utils/momentum'
 import { calcConditionInsight } from '../utils/insights'
@@ -78,11 +79,9 @@ export default function Progress({ data, update }) {
 
   return (
     <div className="px-6 pb-28 pt-8">
-      <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
-        📈 내 변화
-      </p>
+      <PageHeader title="진행상황" />
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
+      <div className="mt-6 grid grid-cols-2 gap-2">
         <StatBlock emoji="🔥" label="연속 기록" value={`${streak}일`} />
         <StatBlock emoji="🏆" label="최고 기록" value={`${bestStreak}일`} />
         <StatBlock emoji="⚡" label="모멘텀" value={momentum} />

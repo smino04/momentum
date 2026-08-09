@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Trash2, Moon, Sun, Plus, X, ChevronUp, ChevronDown, Pencil } from 'lucide-react'
 import Modal from '../components/Modal'
+import PageHeader from '../components/PageHeader'
 import { APP_NAME, APP_TAGLINE, HABIT_EMOJI_CHOICES, CUSTOM_HABIT_GROUP } from '../utils/constants'
 import { todayKey } from '../utils/date'
 
@@ -96,10 +97,8 @@ export default function Settings({ data, update, onReset }) {
 
   return (
     <div className="px-6 pb-28 pt-8">
-      <p className="text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
-        🙂 설정
-      </p>
-      <p className="mt-1 text-2xl font-bold" style={{ color: 'var(--text)' }}>
+      <PageHeader title="설정" />
+      <p className="mt-3 text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
         {APP_NAME}
       </p>
       <p className="text-sm" style={{ color: 'var(--text-3)' }}>
