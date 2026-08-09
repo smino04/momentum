@@ -17,7 +17,7 @@ export default function Settings({ data, update, onReset, onNavigate, onRefresh 
 
   if (view === 'theme') {
     return (
-      <div className="page-shell">
+      <div key="theme" className="page-shell page-transition">
         <SubHeader title="화면 모드" onBack={() => setView('root')} />
         <ThemeView data={data} update={update} isLight={isLight} />
       </div>
@@ -26,7 +26,7 @@ export default function Settings({ data, update, onReset, onNavigate, onRefresh 
 
   if (view === 'profile') {
     return (
-      <div className="page-shell">
+      <div key="profile" className="page-shell page-transition">
         <SubHeader title="프로필" onBack={() => setView('root')} />
         <ProfileView data={data} update={update} />
       </div>
@@ -35,7 +35,7 @@ export default function Settings({ data, update, onReset, onNavigate, onRefresh 
 
   if (view === 'habits') {
     return (
-      <div className="page-shell">
+      <div key="habits" className="page-shell page-transition">
         <SubHeader title="관리 항목" onBack={() => setView('root')} />
         <HabitsView data={data} update={update} activeHabits={activeHabits} />
       </div>
@@ -44,7 +44,7 @@ export default function Settings({ data, update, onReset, onNavigate, onRefresh 
 
   if (view === 'data') {
     return (
-      <div className="page-shell">
+      <div key="data" className="page-shell page-transition">
         <SubHeader title="데이터" onBack={() => setView('root')} />
         <DataView onReset={onReset} />
       </div>
@@ -52,7 +52,7 @@ export default function Settings({ data, update, onReset, onNavigate, onRefresh 
   }
 
   return (
-    <div className="page-shell">
+    <div key="root" className="page-shell page-transition">
       <PageHeader title="설정" onClick={onRefresh} />
       <p className="mt-3 text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
         {APP_NAME}

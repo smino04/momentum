@@ -51,12 +51,14 @@ export default function App() {
     <>
       <Splash />
       <div className="mx-auto min-h-screen max-w-md">
-        {tab === 'home' && <Home key={pageKey} data={data} update={update} onRefresh={refresh} />}
-        {tab === 'progress' && <Progress key={pageKey} data={data} update={update} onRefresh={refresh} />}
-        {tab === 'calendar' && <Calendar key={pageKey} data={data} update={update} onRefresh={refresh} />}
-        {tab === 'settings' && (
-          <Settings key={pageKey} data={data} update={update} onReset={reset} onNavigate={navigate} onRefresh={refresh} />
-        )}
+        <div key={pageKey} className="page-transition">
+          {tab === 'home' && <Home data={data} update={update} onRefresh={refresh} />}
+          {tab === 'progress' && <Progress data={data} update={update} onRefresh={refresh} />}
+          {tab === 'calendar' && <Calendar data={data} update={update} onRefresh={refresh} />}
+          {tab === 'settings' && (
+            <Settings data={data} update={update} onReset={reset} onNavigate={navigate} onRefresh={refresh} />
+          )}
+        </div>
         <BottomNav active={tab} onChange={navigate} />
       </div>
     </>
