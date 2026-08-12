@@ -1,22 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Check, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import Modal from './Modal'
 import { OUTING_TYPES } from '../utils/constants'
-import { formatShortDate, todayKey } from '../utils/date'
+import { formatShortDate } from '../utils/date'
 import { defaultEndDate } from '../utils/outings'
-import { isHabitDueOn } from '../utils/momentum'
 
-export default function OutingModal({
-  open,
-  anchorDate,
-  existing,
-  habits,
-  dailyLogs,
-  onToggleHabit,
-  onClose,
-  onSave,
-  onDelete,
-}) {
+export default function OutingModal({ open, anchorDate, existing, onClose, onSave, onDelete }) {
   const [type, setType] = useState(OUTING_TYPES[0].id)
   const [endDate, setEndDate] = useState(anchorDate)
 
@@ -35,15 +24,6 @@ export default function OutingModal({
   const startDate = existing?.startDate ?? anchorDate
   const isLight = document.documentElement.getAttribute('data-theme') === 'light'
 
-  const showHabitChecklist = habits && dailyLogs && anchorDate <= todayKey()
-  const dueHabits = showHabitChecklist
-    ? habits
-        .filter((h) => h.active !== false && (!h.createdAt || h.createdAt <= anchorDate))
-        .filter((h) => isHabitDueOn(h, anchorDate))
-        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    : []
-  const dayLog = dailyLogs?.[anchorDate] || {}
-
   function handleTypeChange(t) {
     setType(t)
     setEndDate(defaultEndDate(t, startDate))
@@ -55,44 +35,6 @@ export default function OutingModal({
 
   return (
     <Modal open={open} onClose={onClose} title={formatShortDate(startDate)}>
-      {showHabitChecklist && dueHabits.length > 0 && (
-        <div className="mb-5">
-          <p className="mb-2 text-sm font-medium" style={{ color: 'var(--text-2)' }}>
-            이 날의 관리항목
-          </p>
-          <div className="flex flex-col gap-1.5">
-            {dueHabits.map((h) => {
-              const checked = Boolean(dayLog[h.id])
-              return (
-                <button
-                  key={h.id}
-                  onClick={() => onToggleHabit(anchorDate, h.id)}
-                  className="flex items-center gap-2.5 rounded-2xl px-3 py-2.5"
-                  style={{ background: 'var(--surface-soft)' }}
-                >
-                  <span className="text-base">{h.emoji}</span>
-                  <span
-                    className="flex-1 text-left text-sm font-medium"
-                    style={{ color: checked ? 'var(--text-4)' : 'var(--text)' }}
-                  >
-                    {h.label}
-                  </span>
-                  <span
-                    className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg border"
-                    style={{
-                      borderColor: checked ? 'var(--color-accent)' : 'var(--border)',
-                      background: checked ? 'var(--color-accent)' : 'transparent',
-                    }}
-                  >
-                    {checked && <Check size={13} strokeWidth={3} className="text-black" />}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
       <p className="mb-2 text-sm font-medium" style={{ color: 'var(--text-2)' }}>
         일정 종류
       </p>

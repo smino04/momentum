@@ -8,7 +8,7 @@ import { useBackClose } from '../utils/useBackClose'
 
 const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
 
-export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, onDelete }) {
+export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, onDelete, onToggleDate }) {
   useBackClose(Boolean(habit), onClose)
   const today = todayKey()
   const now = new Date()
@@ -231,12 +231,19 @@ export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, on
               const checked = Boolean(dailyLogs[dateKey]?.[habit.id])
               const isToday = dateKey === today
               const isFuture = dateKey > today
+              const isBeforeCreation = habit.createdAt && dateKey < habit.createdAt
+              const editable = !isFuture && !isBeforeCreation && Boolean(onToggleDate)
               return (
-                <div key={day} className="flex flex-col items-center gap-1">
+                <button
+                  key={day}
+                  onClick={() => editable && onToggleDate(dateKey)}
+                  disabled={!editable}
+                  className="flex flex-col items-center gap-1 disabled:cursor-not-allowed"
+                >
                   <div
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-sm"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-sm transition-colors"
                     style={{
-                      color: isFuture ? 'var(--text-4)' : 'var(--text)',
+                      color: isFuture || isBeforeCreation ? 'var(--text-4)' : 'var(--text)',
                       background: isToday ? 'var(--surface)' : 'transparent',
                       border: isToday ? '1px solid var(--color-accent)' : 'none',
                       fontWeight: isToday ? 700 : 400,
@@ -248,7 +255,7 @@ export default function HabitDetailModal({ habit, dailyLogs, onClose, onSave, on
                     className="h-1.5 w-1.5 rounded-full"
                     style={{ background: checked ? 'var(--color-accent)' : 'transparent' }}
                   />
-                </div>
+                </button>
               )
             })}
           </div>

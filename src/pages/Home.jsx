@@ -64,10 +64,14 @@ export default function Home({ data, update, onRefresh }) {
   }, [todayDone])
 
   function toggleHabit(habitId) {
+    toggleHabitOnDate(today, habitId)
+  }
+
+  function toggleHabitOnDate(dateKey, habitId) {
     update((prev) => {
-      const dayLog = { ...(prev.dailyLogs[today] || {}) }
+      const dayLog = { ...(prev.dailyLogs[dateKey] || {}) }
       dayLog[habitId] = !dayLog[habitId]
-      return { ...prev, dailyLogs: { ...prev.dailyLogs, [today]: dayLog } }
+      return { ...prev, dailyLogs: { ...prev.dailyLogs, [dateKey]: dayLog } }
     })
   }
 
@@ -147,6 +151,7 @@ export default function Home({ data, update, onRefresh }) {
           onClose={() => setDetailHabitId(null)}
           onSave={saveHabitEdit}
           onDelete={deleteHabitFromDetail}
+          onToggleDate={(dateKey) => toggleHabitOnDate(dateKey, detailHabitId)}
         />
       )}
     </div>
