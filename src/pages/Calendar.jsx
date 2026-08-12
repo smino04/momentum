@@ -11,9 +11,10 @@ import {
   dateKeyFor,
   formatShortDate,
   leaveDDay,
+  addMonths,
 } from '../utils/date'
 import { getNextOuting, outingDday } from '../utils/outings'
-import { OUTING_TYPES, OUTING_TYPE_COLORS, DISCHARGE_COLOR } from '../utils/constants'
+import { OUTING_TYPES, OUTING_TYPE_COLORS, DISCHARGE_COLOR, ENLISTMENT_COLOR } from '../utils/constants'
 
 const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
 const SHORT_LABELS = { 휴가: '휴가', 평일외출: '평출', 주말외출: '주출', 면회외출: '면출', 외박: '외박' }
@@ -51,6 +52,7 @@ export default function Calendar({ data, update, onRefresh }) {
   const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
   const nextDday = outingDday(nextOuting, today)
   const dischargeDday = leaveDDay(data.dischargeDate, today)
+  const enlistmentDate = data.dischargeDate ? addMonths(data.dischargeDate, -18) : null
 
   const selectedExisting = selectedDate ? outingsByDate.get(selectedDate)?.outing ?? null : null
 
@@ -169,6 +171,8 @@ export default function Calendar({ data, update, onRefresh }) {
                 today={today}
                 isCurrentMonth={viewYear === now.getFullYear() && m === now.getMonth()}
                 onSelect={selectMonthFromYearView}
+                dischargeDate={data.dischargeDate}
+                enlistmentDate={enlistmentDate}
               />
             ))}
           </div>
@@ -185,6 +189,7 @@ export default function Calendar({ data, update, onRefresh }) {
               const covering = outingsByDate.get(dateKey)
               const isToday = dateKey === today
               const isDischarge = dateKey === data.dischargeDate
+              const isEnlistment = dateKey === enlistmentDate
               const typeColor = covering ? OUTING_TYPE_COLORS[covering.outing.type] : null
               return (
                 <button
@@ -205,6 +210,13 @@ export default function Calendar({ data, update, onRefresh }) {
                       style={{ background: DISCHARGE_COLOR, color: '#241a00' }}
                     >
                       ⭐전역⭐
+                    </span>
+                  ) : isEnlistment ? (
+                    <span
+                      className="flex h-[20px] w-full items-center justify-center rounded-md text-[9px] font-bold"
+                      style={{ background: ENLISTMENT_COLOR, color: '#04261d' }}
+                    >
+                      입대
                     </span>
                   ) : covering ? (
                     <span

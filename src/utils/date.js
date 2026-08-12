@@ -30,6 +30,12 @@ export function addDays(dateKey, n) {
   return todayKey(d)
 }
 
+export function addMonths(dateKey, n) {
+  const d = new Date(dateKey + 'T00:00:00')
+  d.setMonth(d.getMonth() + n)
+  return todayKey(d)
+}
+
 export function lastNDays(n, endKey = todayKey()) {
   const keys = []
   for (let i = n - 1; i >= 0; i--) {

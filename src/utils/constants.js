@@ -48,6 +48,7 @@ export const OUTING_TYPE_COLORS = {
 }
 
 export const DISCHARGE_COLOR = '#FFD23F'
+export const ENLISTMENT_COLOR = '#5DE0C0'
 
 export const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100]
 
