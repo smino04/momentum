@@ -37,6 +37,14 @@ export const OUTING_TYPES = [
   { id: '외박', label: '외박', emoji: '🌙' },
 ]
 
+export const OUTING_TYPE_COLORS = {
+  휴가: '#FF7A45',
+  외출: '#4DA3FF',
+  외박: '#B47AFF',
+}
+
+export const DISCHARGE_COLOR = '#FFD23F'
+
 export const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100]
 
 export const CONDITION_FIELDS = [

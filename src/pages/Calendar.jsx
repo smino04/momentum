@@ -12,7 +12,7 @@ import {
   leaveDDay,
 } from '../utils/date'
 import { getNextOuting, outingDday } from '../utils/outings'
-import { OUTING_TYPES } from '../utils/constants'
+import { OUTING_TYPES, OUTING_TYPE_COLORS, DISCHARGE_COLOR } from '../utils/constants'
 
 const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
 
@@ -142,7 +142,7 @@ export default function Calendar({ data, update, onRefresh }) {
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-7 gap-y-2 text-center">
+        <div className="mt-3 grid grid-cols-7 gap-x-1 gap-y-1.5 text-center">
           {WEEKDAY_LABELS.map((w) => (
             <p key={w} className="text-[11px]" style={{ color: 'var(--text-4)' }}>
               {w}
@@ -153,41 +153,38 @@ export default function Calendar({ data, update, onRefresh }) {
             const dateKey = dateKeyFor(viewYear, viewMonth, day)
             const covering = outingsByDate.get(dateKey)
             const isToday = dateKey === today
-            const isNextStart = nextOuting?.startDate === dateKey
             const isDischarge = dateKey === data.dischargeDate
+            const typeColor = covering ? OUTING_TYPE_COLORS[covering.outing.type] : null
             return (
               <button
                 key={day}
                 onClick={() => setSelectedDate(dateKey)}
-                className="flex flex-col items-center gap-0.5 py-0.5"
+                className="flex flex-col items-center gap-1 rounded-xl py-1"
+                style={{ border: isToday ? '1.5px solid var(--color-accent)' : '1.5px solid transparent' }}
               >
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-sm"
-                  style={{
-                    color: 'var(--text)',
-                    background: isNextStart
-                      ? 'var(--color-accent)'
-                      : covering
-                        ? 'color-mix(in srgb, var(--color-accent) 16%, transparent)'
-                        : isToday
-                          ? 'var(--surface)'
-                          : 'transparent',
-                    border: isDischarge
-                      ? '1px solid var(--text-2)'
-                      : isToday && !isNextStart
-                        ? '1px solid var(--color-accent)'
-                        : 'none',
-                    fontWeight: isToday || isNextStart ? 700 : 400,
-                  }}
+                <span
+                  className="text-[11px]"
+                  style={{ color: isToday ? 'var(--color-accent)' : 'var(--text-3)', fontWeight: isToday ? 700 : 400 }}
                 >
                   {day}
-                </div>
-                <span
-                  className="text-[9px] font-medium leading-none"
-                  style={{ color: covering ? 'var(--color-accent)' : 'var(--text-3)' }}
-                >
-                  {isDischarge ? '전역' : covering ? covering.outing.type : ' '}
                 </span>
+                {isDischarge ? (
+                  <span
+                    className="flex h-[20px] w-full items-center justify-center rounded-md text-[9px] font-bold"
+                    style={{ background: DISCHARGE_COLOR, color: '#241a00' }}
+                  >
+                    ⭐전역⭐
+                  </span>
+                ) : covering ? (
+                  <span
+                    className="flex h-[20px] w-full items-center justify-center rounded-md text-[10px] font-bold text-white"
+                    style={{ background: typeColor }}
+                  >
+                    {covering.outing.type}
+                  </span>
+                ) : (
+                  <span className="h-[20px] w-full" />
+                )}
               </button>
             )
           })}
