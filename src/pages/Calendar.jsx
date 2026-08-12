@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import OutingModal from '../components/OutingModal'
 import {
@@ -10,7 +10,7 @@ import {
   dateKeyFor,
   formatShortDate,
 } from '../utils/date'
-import { getNextOuting, sortOutingsAsc, outingDday } from '../utils/outings'
+import { getNextOuting, outingDday } from '../utils/outings'
 import { OUTING_TYPES } from '../utils/constants'
 
 const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
@@ -46,10 +46,6 @@ export default function Calendar({ data, update, onRefresh }) {
 
   const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
   const nextDday = outingDday(nextOuting, today)
-  const upcoming = useMemo(
-    () => sortOutingsAsc(data.outings).filter((o) => o.endDate >= today),
-    [data.outings, today]
-  )
 
   const selectedExisting = selectedDate ? outingsByDate.get(selectedDate)?.outing ?? null : null
 
@@ -84,10 +80,6 @@ export default function Calendar({ data, update, onRefresh }) {
   function deleteOuting() {
     update((prev) => ({ ...prev, outings: prev.outings.filter((o) => o.id !== selectedExisting?.id) }))
     setSelectedDate(null)
-  }
-
-  function removeOuting(id) {
-    update((prev) => ({ ...prev, outings: prev.outings.filter((o) => o.id !== id) }))
   }
 
   return (
@@ -174,46 +166,12 @@ export default function Calendar({ data, update, onRefresh }) {
                 >
                   {day}
                 </div>
-                <span className="text-xs leading-none">
-                  {covering?.isStart ? typeEmoji(covering.outing.type) : covering ? '·' : ' '}
-                </span>
+                <span className="text-xs leading-none">{covering ? typeEmoji(covering.outing.type) : ' '}</span>
               </button>
             )
           })}
         </div>
       </div>
-
-      {upcoming.length > 0 && (
-        <div className="mt-8">
-          <p className="mb-3 text-xs font-medium tracking-widest" style={{ color: 'var(--text-3)' }}>
-            📋 다가오는 일정
-          </p>
-          <div className="flex flex-col gap-2">
-            {upcoming.map((o) => (
-              <div
-                key={o.id}
-                className="flex items-center justify-between rounded-2xl border px-4 py-3"
-                style={{ borderColor: 'var(--border)', background: 'var(--surface-soft)' }}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg">{typeEmoji(o.type)}</span>
-                  <div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text)' }}>
-                      {o.type}
-                    </p>
-                    <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
-                      {rangeLabel(o)}
-                    </p>
-                  </div>
-                </div>
-                <button onClick={() => removeOuting(o.id)} style={{ color: 'var(--text-4)' }}>
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       <OutingModal
         open={Boolean(selectedDate)}
