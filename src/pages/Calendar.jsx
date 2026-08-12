@@ -9,6 +9,7 @@ import {
   firstWeekdayMonIndex,
   dateKeyFor,
   formatShortDate,
+  leaveDDay,
 } from '../utils/date'
 import { getNextOuting, outingDday } from '../utils/outings'
 import { OUTING_TYPES } from '../utils/constants'
@@ -46,6 +47,7 @@ export default function Calendar({ data, update, onRefresh }) {
 
   const nextOuting = useMemo(() => getNextOuting(data.outings, today), [data.outings, today])
   const nextDday = outingDday(nextOuting, today)
+  const dischargeDday = leaveDDay(data.dischargeDate, today)
 
   const selectedExisting = selectedDate ? outingsByDate.get(selectedDate)?.outing ?? null : null
 
@@ -85,6 +87,15 @@ export default function Calendar({ data, update, onRefresh }) {
   return (
     <div className="page-shell">
       <PageHeader title="출타 달력" onClick={onRefresh} />
+
+      {data.dischargeDate && dischargeDday && !dischargeDday.expired && (
+        <div
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums"
+          style={{ background: 'var(--surface)', color: 'var(--text-2)' }}
+        >
+          🎖️ 전역 {dischargeDday.isToday ? 'D-DAY' : `D-${dischargeDday.diff}`}
+        </div>
+      )}
 
       {nextOuting ? (
         <div className="mt-6 rounded-2xl p-4" style={{ background: 'var(--surface)' }}>
@@ -143,6 +154,7 @@ export default function Calendar({ data, update, onRefresh }) {
             const covering = outingsByDate.get(dateKey)
             const isToday = dateKey === today
             const isNextStart = nextOuting?.startDate === dateKey
+            const isDischarge = dateKey === data.dischargeDate
             return (
               <button
                 key={day}
@@ -160,13 +172,22 @@ export default function Calendar({ data, update, onRefresh }) {
                         : isToday
                           ? 'var(--surface)'
                           : 'transparent',
-                    border: isToday && !isNextStart ? '1px solid var(--color-accent)' : 'none',
+                    border: isDischarge
+                      ? '1px solid var(--text-2)'
+                      : isToday && !isNextStart
+                        ? '1px solid var(--color-accent)'
+                        : 'none',
                     fontWeight: isToday || isNextStart ? 700 : 400,
                   }}
                 >
                   {day}
                 </div>
-                <span className="text-xs leading-none">{covering ? typeEmoji(covering.outing.type) : ' '}</span>
+                <span
+                  className="text-[9px] font-medium leading-none"
+                  style={{ color: covering ? 'var(--color-accent)' : 'var(--text-3)' }}
+                >
+                  {isDischarge ? '전역' : covering ? covering.outing.type : ' '}
+                </span>
               </button>
             )
           })}

@@ -7,7 +7,7 @@ import StreakBadge from '../components/StreakBadge'
 import CelebrationModal from '../components/CelebrationModal'
 import HabitDetailModal from '../components/HabitDetailModal'
 import PageHeader from '../components/PageHeader'
-import { todayKey, formatMonthDay, addDays } from '../utils/date'
+import { todayKey, formatMonthDay, addDays, leaveDDay } from '../utils/date'
 import { calcMomentum, todayCompletionRate, calculateCurrentStreak } from '../utils/momentum'
 import { getNextOuting, outingDday } from '../utils/outings'
 import { STREAK_MILESTONE_MESSAGES } from '../utils/constants'
@@ -104,9 +104,20 @@ export default function Home({ data, update, onRefresh }) {
     return <LeaveDayView data={data} today={today} outingType={nextOuting?.type ?? '휴가'} />
   }
 
+  const dischargeDday = leaveDDay(data.dischargeDate, today)
+
   return (
     <div className="page-shell">
       <PageHeader title="홈" onClick={onRefresh} />
+
+      {data.dischargeDate && dischargeDday && !dischargeDday.expired && (
+        <div
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums"
+          style={{ background: 'var(--surface)', color: 'var(--text-2)' }}
+        >
+          🎖️ 전역 {dischargeDday.isToday ? 'D-DAY' : `D-${dischargeDday.diff}`}
+        </div>
+      )}
 
       <div className="mt-6">
         <Countdown date={nextOuting?.startDate} dday={dday} label={nextOuting?.type ?? '휴가'} />

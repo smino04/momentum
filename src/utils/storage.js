@@ -8,6 +8,7 @@ const DEFAULT_DATA = {
   theme: 'dark',
   profile: { name: '', height: '', weight: '', bodyFat: '' },
   leaveDate: '',
+  dischargeDate: '',
   outings: [],
   habits: DEFAULT_HABITS,
   dailyLogs: {},

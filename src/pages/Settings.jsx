@@ -169,12 +169,23 @@ function ThemeButton({ active, onClick, icon: Icon, label }) {
 }
 
 function ProfileView({ data, update }) {
+  const isLight = data.theme === 'light'
+
   function updateProfileField(field, value) {
     update((prev) => ({ ...prev, profile: { ...prev.profile, [field]: value } }))
   }
 
   return (
     <div className="mt-8">
+      <Field label="전역일">
+        <input
+          type="date"
+          value={data.dischargeDate}
+          onChange={(e) => update((prev) => ({ ...prev, dischargeDate: e.target.value }))}
+          className="input-field"
+          style={{ colorScheme: isLight ? 'light' : 'dark' }}
+        />
+      </Field>
       <Field label="이름">
         <input
           value={data.profile.name}
