@@ -33,13 +33,17 @@ export const CUSTOM_HABIT_GROUP = '기타'
 
 export const OUTING_TYPES = [
   { id: '휴가', label: '휴가', emoji: '🏖️' },
-  { id: '외출', label: '외출', emoji: '🚶' },
+  { id: '평일외출', label: '평일외출', emoji: '🚶' },
+  { id: '주말외출', label: '주말외출', emoji: '🚶' },
+  { id: '면회외출', label: '면회외출', emoji: '🤝' },
   { id: '외박', label: '외박', emoji: '🌙' },
 ]
 
 export const OUTING_TYPE_COLORS = {
   휴가: '#FF7A45',
-  외출: '#4DA3FF',
+  평일외출: '#4DA3FF',
+  주말외출: '#33C481',
+  면회외출: '#FF6FA5',
   외박: '#B47AFF',
 }
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import OutingModal from '../components/OutingModal'
 import {
@@ -15,6 +15,7 @@ import { getNextOuting, outingDday } from '../utils/outings'
 import { OUTING_TYPES, OUTING_TYPE_COLORS, DISCHARGE_COLOR } from '../utils/constants'
 
 const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
+const SHORT_LABELS = { 휴가: '휴가', 평일외출: '평일', 주말외출: '주말', 면회외출: '면회', 외박: '외박' }
 
 function typeEmoji(type) {
   return OUTING_TYPES.find((t) => t.id === type)?.emoji ?? '📌'
@@ -31,6 +32,7 @@ export default function Calendar({ data, update, onRefresh }) {
   const now = new Date()
   const [viewYear, setViewYear] = useState(now.getFullYear())
   const [viewMonth, setViewMonth] = useState(now.getMonth())
+  const [yearView, setYearView] = useState(false)
   const [selectedDate, setSelectedDate] = useState(null)
 
   const outingsByDate = useMemo(() => {
@@ -63,6 +65,14 @@ export default function Calendar({ data, update, onRefresh }) {
     }
     setViewYear(y)
     setViewMonth(m)
+  }
+
+  function monthHasEvent(y, m) {
+    const start = dateKeyFor(y, m, 1)
+    const end = dateKeyFor(y, m, daysInMonth(y, m))
+    const hasOuting = data.outings.some((o) => o.startDate <= end && o.endDate >= start)
+    const hasDischarge = data.dischargeDate && data.dischargeDate >= start && data.dischargeDate <= end
+    return hasOuting || hasDischarge
   }
 
   const totalCells = daysInMonth(viewYear, viewMonth)
@@ -121,74 +131,116 @@ export default function Calendar({ data, update, onRefresh }) {
 
       <div className="mt-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
-            {viewYear}년 {viewMonth + 1}월
-          </p>
+          <button
+            onClick={() => setYearView((v) => !v)}
+            className="flex items-center gap-1 py-1"
+          >
+            <span className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+              {yearView ? `${viewYear}년` : `${viewYear}년 ${viewMonth + 1}월`}
+            </span>
+            <ChevronDown
+              size={16}
+              style={{ color: 'var(--text-3)', transform: yearView ? 'rotate(180deg)' : 'none' }}
+            />
+          </button>
           <div className="flex gap-2">
             <button
-              onClick={() => changeMonth(-1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full"
+              onClick={() => (yearView ? setViewYear((y) => y - 1) : changeMonth(-1))}
+              className="flex h-11 w-11 items-center justify-center rounded-full active:opacity-60"
               style={{ background: 'var(--surface)', color: 'var(--text-2)' }}
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={22} />
             </button>
             <button
-              onClick={() => changeMonth(1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full"
+              onClick={() => (yearView ? setViewYear((y) => y + 1) : changeMonth(1))}
+              className="flex h-11 w-11 items-center justify-center rounded-full active:opacity-60"
               style={{ background: 'var(--surface)', color: 'var(--text-2)' }}
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={22} />
             </button>
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-7 gap-x-1 gap-y-1.5 text-center">
-          {WEEKDAY_LABELS.map((w) => (
-            <p key={w} className="text-[11px]" style={{ color: 'var(--text-4)' }}>
-              {w}
-            </p>
-          ))}
-          {cells.map((day, i) => {
-            if (day === null) return <div key={`b${i}`} />
-            const dateKey = dateKeyFor(viewYear, viewMonth, day)
-            const covering = outingsByDate.get(dateKey)
-            const isToday = dateKey === today
-            const isDischarge = dateKey === data.dischargeDate
-            const typeColor = covering ? OUTING_TYPE_COLORS[covering.outing.type] : null
-            return (
-              <button
-                key={day}
-                onClick={() => setSelectedDate(dateKey)}
-                className="flex flex-col items-center gap-1 rounded-xl py-1"
-                style={{ border: isToday ? '1.5px solid var(--color-accent)' : '1.5px solid transparent' }}
-              >
-                <span
-                  className="text-[11px]"
-                  style={{ color: isToday ? 'var(--color-accent)' : 'var(--text-3)', fontWeight: isToday ? 700 : 400 }}
+        {yearView ? (
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {Array.from({ length: 12 }, (_, m) => m).map((m) => {
+              const isCurrentMonth = viewYear === now.getFullYear() && m === now.getMonth()
+              return (
+                <button
+                  key={m}
+                  onClick={() => {
+                    setViewMonth(m)
+                    setYearView(false)
+                  }}
+                  className="flex flex-col items-center gap-1.5 rounded-2xl border py-4"
+                  style={{
+                    borderColor: isCurrentMonth ? 'var(--color-accent)' : 'var(--border)',
+                    background: 'var(--surface-soft)',
+                  }}
                 >
-                  {day}
-                </span>
-                {isDischarge ? (
                   <span
-                    className="flex h-[20px] w-full items-center justify-center rounded-md text-[9px] font-bold"
-                    style={{ background: DISCHARGE_COLOR, color: '#241a00' }}
+                    className="text-sm font-semibold"
+                    style={{ color: isCurrentMonth ? 'var(--color-accent)' : 'var(--text)' }}
                   >
-                    ⭐전역⭐
+                    {m + 1}월
                   </span>
-                ) : covering ? (
                   <span
-                    className="flex h-[20px] w-full items-center justify-center rounded-md text-[10px] font-bold text-white"
-                    style={{ background: typeColor }}
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ background: monthHasEvent(viewYear, m) ? 'var(--color-accent)' : 'transparent' }}
+                  />
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="mt-3 grid grid-cols-7 gap-x-1 gap-y-1.5 text-center">
+            {WEEKDAY_LABELS.map((w) => (
+              <p key={w} className="text-[11px]" style={{ color: 'var(--text-4)' }}>
+                {w}
+              </p>
+            ))}
+            {cells.map((day, i) => {
+              if (day === null) return <div key={`b${i}`} />
+              const dateKey = dateKeyFor(viewYear, viewMonth, day)
+              const covering = outingsByDate.get(dateKey)
+              const isToday = dateKey === today
+              const isDischarge = dateKey === data.dischargeDate
+              const typeColor = covering ? OUTING_TYPE_COLORS[covering.outing.type] : null
+              return (
+                <button
+                  key={day}
+                  onClick={() => setSelectedDate(dateKey)}
+                  className="flex flex-col items-center gap-1 rounded-xl py-1"
+                  style={{ border: isToday ? '1.5px solid var(--color-accent)' : '1.5px solid transparent' }}
+                >
+                  <span
+                    className="text-[11px]"
+                    style={{ color: isToday ? 'var(--color-accent)' : 'var(--text-3)', fontWeight: isToday ? 700 : 400 }}
                   >
-                    {covering.outing.type}
+                    {day}
                   </span>
-                ) : (
-                  <span className="h-[20px] w-full" />
-                )}
-              </button>
-            )
-          })}
-        </div>
+                  {isDischarge ? (
+                    <span
+                      className="flex h-[20px] w-full items-center justify-center rounded-md text-[9px] font-bold"
+                      style={{ background: DISCHARGE_COLOR, color: '#241a00' }}
+                    >
+                      ⭐전역⭐
+                    </span>
+                  ) : covering ? (
+                    <span
+                      className="flex h-[20px] w-full items-center justify-center rounded-md text-[9px] font-bold text-white"
+                      style={{ background: typeColor }}
+                    >
+                      {SHORT_LABELS[covering.outing.type] ?? covering.outing.type}
+                    </span>
+                  ) : (
+                    <span className="h-[20px] w-full" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <OutingModal

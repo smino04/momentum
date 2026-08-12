@@ -38,20 +38,23 @@ export default function OutingModal({ open, anchorDate, existing, onClose, onSav
       <p className="mb-2 text-sm font-medium" style={{ color: 'var(--text-2)' }}>
         일정 종류
       </p>
-      <div className="flex gap-2">
+      <div className="grid grid-cols-3 gap-2">
         {OUTING_TYPES.map((t) => (
           <button
             key={t.id}
             onClick={() => handleTypeChange(t.id)}
-            className="flex flex-1 flex-col items-center gap-1 rounded-2xl border py-3.5"
+            className="flex flex-col items-center gap-1 rounded-2xl border py-3"
             style={{
               borderColor: type === t.id ? 'var(--color-accent)' : 'var(--border)',
               background:
                 type === t.id ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'var(--surface-soft)',
             }}
           >
-            <span className="text-xl">{t.emoji}</span>
-            <span className="text-xs font-medium" style={{ color: type === t.id ? 'var(--color-accent)' : 'var(--text-2)' }}>
+            <span className="text-lg">{t.emoji}</span>
+            <span
+              className="text-[11px] font-medium leading-tight"
+              style={{ color: type === t.id ? 'var(--color-accent)' : 'var(--text-2)' }}
+            >
               {t.label}
             </span>
           </button>
