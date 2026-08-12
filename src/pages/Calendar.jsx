@@ -90,6 +90,14 @@ export default function Calendar({ data, update, onRefresh }) {
     update((prev) => ({ ...prev, outings: prev.outings.filter((o) => o.id !== id) }))
   }
 
+  function toggleHabitForDate(dateKey, habitId) {
+    update((prev) => {
+      const dayLog = { ...(prev.dailyLogs[dateKey] || {}) }
+      dayLog[habitId] = !dayLog[habitId]
+      return { ...prev, dailyLogs: { ...prev.dailyLogs, [dateKey]: dayLog } }
+    })
+  }
+
   return (
     <div className="page-shell">
       <PageHeader title="캘린더" onClick={onRefresh} />
@@ -219,6 +227,9 @@ export default function Calendar({ data, update, onRefresh }) {
         open={Boolean(selectedDate)}
         anchorDate={selectedDate}
         existing={selectedExisting}
+        habits={data.habits}
+        dailyLogs={data.dailyLogs}
+        onToggleHabit={toggleHabitForDate}
         onClose={() => setSelectedDate(null)}
         onSave={saveOuting}
         onDelete={deleteOuting}
