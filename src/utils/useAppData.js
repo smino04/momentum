@@ -1,11 +1,14 @@
 import { useEffect, useState, useCallback } from 'react'
 import { loadData, saveData, resetData } from './storage'
+import { showToast } from './toast'
 
 export function useAppData() {
   const [data, setData] = useState(loadData)
 
   useEffect(() => {
-    saveData(data)
+    if (!saveData(data)) {
+      showToast('저장 공간이 부족해요. 사진을 정리해보세요.')
+    }
   }, [data])
 
   useEffect(() => {

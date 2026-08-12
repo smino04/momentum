@@ -1,6 +1,8 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Camera, Plus } from 'lucide-react'
 import { todayKey } from '../utils/date'
+import { compressImageFile } from '../utils/image'
+import { showToast } from '../utils/toast'
 
 const ANGLES = [
   { id: 'face', label: '얼굴' },
@@ -14,6 +16,7 @@ function weekLabel(index) {
 export default function PhotoJournal({ photos, onAdd }) {
   const fileInputRef = useRef(null)
   const pendingAngle = useRef('face')
+  const [processing, setProcessing] = useState(false)
 
   const weeks = groupByWeek(photos)
 
@@ -22,20 +25,24 @@ export default function PhotoJournal({ photos, onAdd }) {
     fileInputRef.current?.click()
   }
 
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => {
+    setProcessing(true)
+    try {
+      const dataUrl = await compressImageFile(file)
       onAdd({
         id: Date.now().toString(),
         angle: pendingAngle.current,
         date: todayKey(),
-        dataUrl: reader.result,
+        dataUrl,
       })
+    } catch {
+      showToast('사진을 불러오지 못했어요')
+    } finally {
+      setProcessing(false)
     }
-    reader.readAsDataURL(file)
   }
 
   return (
@@ -52,12 +59,13 @@ export default function PhotoJournal({ photos, onAdd }) {
           <button
             key={a.id}
             onClick={() => pickFile(a.id)}
-            className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed py-5"
+            disabled={processing}
+            className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed py-5 disabled:opacity-40"
             style={{ borderColor: 'var(--border)' }}
           >
             <Camera size={18} style={{ color: 'var(--text-3)' }} />
             <span className="text-[11px]" style={{ color: 'var(--text-2)' }}>
-              {a.label}
+              {processing ? '처리 중...' : a.label}
             </span>
           </button>
         ))}

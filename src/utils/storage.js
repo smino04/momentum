@@ -45,7 +45,14 @@ export function loadData() {
 }
 
 export function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    return true
+  } catch {
+    // Storage quota exceeded (e.g. too many photos) - the in-memory state
+    // still reflects the latest change, just don't crash trying to persist it.
+    return false
+  }
 }
 
 export function resetData() {
