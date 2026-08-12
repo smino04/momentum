@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import OutingModal from '../components/OutingModal'
+import MiniMonthGrid from '../components/MiniMonthGrid'
 import {
   todayKey,
   addDays,
@@ -15,7 +16,7 @@ import { getNextOuting, outingDday } from '../utils/outings'
 import { OUTING_TYPES, OUTING_TYPE_COLORS, DISCHARGE_COLOR } from '../utils/constants'
 
 const WEEKDAY_LABELS = ['월', '화', '수', '목', '금', '토', '일']
-const SHORT_LABELS = { 휴가: '휴가', 평일외출: '평일', 주말외출: '주말', 면회외출: '면회', 외박: '외박' }
+const SHORT_LABELS = { 휴가: '휴가', 평일외출: '평출', 주말외출: '주출', 면회외출: '면출', 외박: '외박' }
 
 function typeEmoji(type) {
   return OUTING_TYPES.find((t) => t.id === type)?.emoji ?? '📌'
@@ -67,12 +68,9 @@ export default function Calendar({ data, update, onRefresh }) {
     setViewMonth(m)
   }
 
-  function monthHasEvent(y, m) {
-    const start = dateKeyFor(y, m, 1)
-    const end = dateKeyFor(y, m, daysInMonth(y, m))
-    const hasOuting = data.outings.some((o) => o.startDate <= end && o.endDate >= start)
-    const hasDischarge = data.dischargeDate && data.dischargeDate >= start && data.dischargeDate <= end
-    return hasOuting || hasDischarge
+  function selectMonthFromYearView(m) {
+    setViewMonth(m)
+    setYearView(false)
   }
 
   const totalCells = daysInMonth(viewYear, viewMonth)
@@ -131,11 +129,11 @@ export default function Calendar({ data, update, onRefresh }) {
 
       <div className="mt-6">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => setYearView((v) => !v)}
-            className="flex items-center gap-1 py-1"
-          >
-            <span className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+          <button onClick={() => setYearView((v) => !v)} className="flex items-center gap-1 py-1">
+            <span
+              className={yearView ? 'text-2xl font-extrabold' : 'text-base font-semibold'}
+              style={{ color: yearView ? 'var(--color-accent)' : 'var(--text)' }}
+            >
               {yearView ? `${viewYear}년` : `${viewYear}년 ${viewMonth + 1}월`}
             </span>
             <ChevronDown
@@ -162,35 +160,17 @@ export default function Calendar({ data, update, onRefresh }) {
         </div>
 
         {yearView ? (
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            {Array.from({ length: 12 }, (_, m) => m).map((m) => {
-              const isCurrentMonth = viewYear === now.getFullYear() && m === now.getMonth()
-              return (
-                <button
-                  key={m}
-                  onClick={() => {
-                    setViewMonth(m)
-                    setYearView(false)
-                  }}
-                  className="flex flex-col items-center gap-1.5 rounded-2xl border py-4"
-                  style={{
-                    borderColor: isCurrentMonth ? 'var(--color-accent)' : 'var(--border)',
-                    background: 'var(--surface-soft)',
-                  }}
-                >
-                  <span
-                    className="text-sm font-semibold"
-                    style={{ color: isCurrentMonth ? 'var(--color-accent)' : 'var(--text)' }}
-                  >
-                    {m + 1}월
-                  </span>
-                  <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ background: monthHasEvent(viewYear, m) ? 'var(--color-accent)' : 'transparent' }}
-                  />
-                </button>
-              )
-            })}
+          <div className="mt-5 grid grid-cols-3 gap-x-3 gap-y-6">
+            {Array.from({ length: 12 }, (_, m) => m).map((m) => (
+              <MiniMonthGrid
+                key={m}
+                year={viewYear}
+                month={m}
+                today={today}
+                isCurrentMonth={viewYear === now.getFullYear() && m === now.getMonth()}
+                onSelect={selectMonthFromYearView}
+              />
+            ))}
           </div>
         ) : (
           <div className="mt-3 grid grid-cols-7 gap-x-1 gap-y-1.5 text-center">
